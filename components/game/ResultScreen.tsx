@@ -17,79 +17,93 @@ export function ResultScreen({
 }: ResultScreenProps) {
   if (won) {
     return (
-      <div className="text-center max-w-md mx-auto">
+      <div className="text-center max-w-md mx-auto animate-bounce-in">
         <Confetti />
 
-        {/* Trophy icon */}
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-orange-brand/10 flex items-center justify-center glow-orange">
+        {/* Trophy */}
+        <div className="w-28 h-28 mx-auto mb-4 rounded-full bg-orange-brand/10 flex items-center justify-center glow-orange">
           <svg
-            className="w-12 h-12 text-orange-brand"
-            fill="none"
+            className="w-14 h-14 text-orange-brand"
+            fill="currentColor"
             viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-4.5A3.375 3.375 0 0019.875 10.875h-.375a.375.375 0 01-.375-.375V7.5a.375.375 0 01.375-.375h.375A3.375 3.375 0 0023.25 3.75V3a.75.75 0 00-.75-.75h-3.375a.375.375 0 01-.375-.375V1.5a.75.75 0 00-.75-.75h-12a.75.75 0 00-.75.75v.375a.375.375 0 01-.375.375H1.5a.75.75 0 00-.75.75v.75a3.375 3.375 0 003.375 3.375h.375a.375.375 0 01.375.375v3a.375.375 0 01-.375.375h-.375A3.375 3.375 0 001.125 13.5v1.125c0 .207.168.375.375.375H4.5a3.375 3.375 0 003.375 3.375h.375"
-            />
+            <path d="M5 3h14c.6 0 1 .4 1 1v2c0 2.8-2.2 5-5 5h-.2c-.5 1.5-1.5 2.7-2.8 3.5V17h3v2H8v-2h3v-2.5c-1.3-.8-2.3-2-2.8-3.5H8C5.2 11 3 8.8 3 6V4c0-.6.4-1 1-1h1zm0 2v1c0 1.7 1.3 3 3 3h.1c0-.3 0-.7.1-1H5V5zm14 0h-3.2c.1.3.1.7.1 1H16c1.7 0 3-1.3 3-3V5z"/>
           </svg>
         </div>
 
-        <h2 className="text-3xl font-extrabold text-gray-brand mb-2">
-          GANASTE!
+        <h2 className="text-4xl font-extrabold text-gray-brand mb-1 animate-sparkle">
+          GANASTE!!
         </h2>
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-8">
-          <p className="text-green-800 font-semibold text-base">{winMessage}</p>
+        <p className="text-orange-brand font-bold text-lg mb-4">
+          Felicitaciones!
+        </p>
+
+        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-5 mb-6 animate-slide-up">
+          <svg className="w-8 h-8 text-green-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+          </svg>
+          <p className="text-green-800 font-bold text-base">{winMessage}</p>
         </div>
+
         <button
           onClick={onPlayAgain}
-          className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98]"
+          className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.97] animate-scale-pop"
+          style={{ animationDelay: "0.3s", opacity: 0 }}
         >
-          Jugar de nuevo
+          Jugar de nuevo!
         </button>
       </div>
     );
   }
 
   return (
-    <div className="text-center max-w-md mx-auto">
-      {/* Close/X icon */}
-      <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-red-50 flex items-center justify-center">
+    <div className="text-center max-w-md mx-auto animate-bounce-in">
+      {/* Sad face icon */}
+      <div className="w-28 h-28 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
         <svg
-          className="w-12 h-12 text-red-400"
+          className="w-14 h-14 text-red-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          strokeWidth={2}
+          strokeWidth={1.5}
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"
           />
         </svg>
       </div>
 
-      <h2 className="text-3xl font-extrabold text-gray-brand mb-2">
-        Estuviste cerca!
+      <h2 className="text-3xl font-extrabold text-gray-brand mb-1">
+        Casi casi!
       </h2>
+      <p className="text-gray-400 mb-4">
+        No te preocupes, la proxima seguro la clavas!
+      </p>
+
       {correctAnswer && (
-        <div className="mb-8">
-          <p className="text-gray-400 mb-2 text-sm">
-            La respuesta correcta era:
+        <div className="mb-6 animate-slide-up">
+          <p className="text-gray-400 mb-2 text-xs uppercase tracking-wider font-semibold">
+            La respuesta correcta era
           </p>
-          <p className="text-green-700 font-semibold bg-green-50 border border-green-200 p-3 rounded-xl">
-            {correctAnswer}
-          </p>
+          <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-4">
+            <div className="flex items-center justify-center gap-2">
+              <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-green-800 font-bold">{correctAnswer}</p>
+            </div>
+          </div>
         </div>
       )}
+
       <button
         onClick={onPlayAgain}
-        className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98]"
+        className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.97] animate-scale-pop"
+        style={{ animationDelay: "0.3s", opacity: 0 }}
       >
-        Volver al inicio
+        Intentar de nuevo!
       </button>
     </div>
   );

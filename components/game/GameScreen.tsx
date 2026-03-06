@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { Question, GamePhase } from "@/lib/types";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionCard } from "./QuestionCard";
 import { ResultScreen } from "./ResultScreen";
+import { playCorrect, playWrong, playWin, playStart } from "@/lib/sounds";
 
 interface GameScreenProps {
   questions: Question[];
@@ -17,6 +18,11 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [correctAnswerText, setCorrectAnswerText] = useState<string>("");
+  const [animKey, setAnimKey] = useState(0);
+
+  useEffect(() => {
+    playStart();
+  }, []);
 
   const handleAnswer = useCallback(
     (optionIndex: number) => {
@@ -29,20 +35,24 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
       setShowFeedback(true);
 
       if (isCorrect) {
+        playCorrect();
         setTimeout(() => {
           if (currentIndex + 1 >= questions.length) {
+            playWin();
             setPhase("won");
           } else {
             setCurrentIndex((prev) => prev + 1);
             setSelectedOption(null);
             setShowFeedback(false);
+            setAnimKey((k) => k + 1);
           }
         }, 1200);
       } else {
+        playWrong();
         setCorrectAnswerText(question.options[question.correctIndex]);
         setTimeout(() => {
           setPhase("lost");
-        }, 2000);
+        }, 2200);
       }
     },
     [currentIndex, questions, showFeedback]
@@ -67,9 +77,12 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
     <div>
       <ProgressBar current={currentIndex} total={questions.length} />
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+      <div
+        key={animKey}
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 animate-slide-up"
+      >
         <div className="mb-4 text-center">
-          <span className="text-sm text-gray-400 font-medium">
+          <span className="inline-block bg-orange-brand/10 text-orange-brand text-xs font-bold px-3 py-1 rounded-full animate-tick">
             Pregunta {currentIndex + 1} de {questions.length}
           </span>
         </div>

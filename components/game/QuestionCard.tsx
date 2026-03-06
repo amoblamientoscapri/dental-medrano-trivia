@@ -16,43 +16,65 @@ export function QuestionCard({
   showFeedback,
 }: QuestionCardProps) {
   const letters = ["A", "B", "C"];
+  const isCorrectAnswer = showFeedback && selectedOption === question.correctIndex;
+  const isWrongAnswer = showFeedback && selectedOption !== null && selectedOption !== question.correctIndex;
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-bold text-gray-900 mb-6 text-center leading-relaxed">
+      <h2 className="text-lg sm:text-xl font-bold text-gray-brand mb-6 text-center leading-relaxed">
         {question.text}
       </h2>
+
+      {/* Feedback banner */}
+      {showFeedback && (
+        <div
+          className={`text-center mb-4 py-2 px-4 rounded-xl text-sm font-bold animate-bounce-in ${
+            isCorrectAnswer
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {isCorrectAnswer ? "Correcto!!" : "Incorrecto!"}
+        </div>
+      )}
 
       <div className="space-y-3">
         {question.options.map((option, i) => {
           let btnClass =
             "option-btn w-full text-left p-4 rounded-xl border-2 font-medium transition-all duration-200 ";
 
+          let extraAnim = "";
+
           if (showFeedback && selectedOption !== null) {
             if (i === question.correctIndex) {
-              btnClass +=
-                "border-green-500 bg-green-50 text-green-800";
+              btnClass += "border-green-500 bg-green-50 text-green-800 ";
+              if (i === selectedOption) {
+                extraAnim = "animate-pulse-green";
+              }
             } else if (i === selectedOption && i !== question.correctIndex) {
-              btnClass +=
-                "border-red-500 bg-red-50 text-red-800";
+              btnClass += "border-red-500 bg-red-50 text-red-800 ";
+              extraAnim = "animate-shake";
             } else {
-              btnClass += "border-gray-200 bg-gray-50 text-gray-400";
+              btnClass += "border-gray-200 bg-gray-50 text-gray-400 ";
             }
           } else {
             btnClass +=
-              "border-gray-200 bg-white text-gray-700 hover:border-orange-brand hover:bg-orange-50 cursor-pointer";
+              "border-gray-200 bg-white text-gray-700 hover:border-orange-brand hover:bg-orange-50 cursor-pointer ";
           }
+
+          const staggerClass = `stagger-${i + 1}`;
 
           return (
             <button
               key={i}
               onClick={() => onAnswer(i)}
               disabled={showFeedback}
-              className={btnClass}
+              className={`${btnClass} ${extraAnim} animate-slide-up ${staggerClass}`}
+              style={{ opacity: 0 }}
             >
               <span className="inline-flex items-center gap-3">
                 <span
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all duration-200 ${
                     showFeedback && i === question.correctIndex
                       ? "bg-green-500 text-white"
                       : showFeedback &&
@@ -76,7 +98,7 @@ export function QuestionCard({
                     letters[i]
                   )}
                 </span>
-                <span>{option}</span>
+                <span className="text-sm sm:text-base">{option}</span>
               </span>
             </button>
           );
