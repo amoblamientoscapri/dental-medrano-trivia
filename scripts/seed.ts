@@ -1,4 +1,4 @@
-import { createClient } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
 import { SEED_QUESTIONS } from "../lib/questions-data";
 
 async function seed() {
@@ -11,19 +11,19 @@ async function seed() {
     process.exit(1);
   }
 
-  const kv = createClient({ url, token });
+  const redis = new Redis({ url, token });
 
   console.log(`Seeding ${SEED_QUESTIONS.length} questions...`);
-  await kv.set("questions", SEED_QUESTIONS);
+  await redis.set("questions", SEED_QUESTIONS);
 
   const defaultConfig = {
     questionsPerRound: 3,
     winMessage:
       "Acercate al stand de Dental Medrano para reclamar tu premio!",
   };
-  await kv.set("game-config", defaultConfig);
+  await redis.set("game-config", defaultConfig);
 
-  console.log("Done! Questions and config seeded to Vercel KV.");
+  console.log("Done! Questions and config seeded to Upstash Redis.");
 }
 
 seed().catch(console.error);
