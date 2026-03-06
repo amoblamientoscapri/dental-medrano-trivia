@@ -16,8 +16,8 @@ export default function HomePage() {
             </span>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-gray-brand mb-4">
-            ¡Trivia
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-brand mb-4">
+            ¡TRIVIA
             <span className="text-orange-brand"> DENTAL!</span>
           </h1>
 
