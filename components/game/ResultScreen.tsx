@@ -17,13 +17,13 @@ export function ResultScreen({
 }: ResultScreenProps) {
   if (won) {
     return (
-      <div className="text-center max-w-md mx-auto animate-bounce-in">
+      <div className="text-center max-w-md sm:max-w-lg mx-auto animate-bounce-in">
         <Confetti />
 
         {/* Trophy */}
-        <div className="w-28 h-28 mx-auto mb-4 rounded-full bg-orange-brand/10 flex items-center justify-center glow-orange">
+        <div className="w-32 h-32 sm:w-36 sm:h-36 mx-auto mb-5 rounded-full bg-orange-brand/10 flex items-center justify-center glow-orange">
           <svg
-            className="w-14 h-14 text-orange-brand"
+            className="w-16 h-16 sm:w-18 sm:h-18 text-orange-brand"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -31,37 +31,37 @@ export function ResultScreen({
           </svg>
         </div>
 
-        <h2 className="text-4xl font-extrabold text-gray-brand mb-1 animate-sparkle">
-          GANASTE!!
+        <h2 className="text-5xl sm:text-6xl font-extrabold text-gray-brand mb-2 animate-sparkle">
+          ¡¡GANASTE!!
         </h2>
-        <p className="text-orange-brand font-bold text-lg mb-4">
-          Felicitaciones!
+        <p className="text-orange-brand font-bold text-xl sm:text-2xl mb-5">
+          ¡Felicitaciones!
         </p>
 
-        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-5 mb-6 animate-slide-up">
-          <svg className="w-8 h-8 text-green-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 sm:p-7 mb-7 animate-slide-up">
+          <svg className="w-10 h-10 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
           </svg>
-          <p className="text-green-800 font-bold text-base">{winMessage}</p>
+          <p className="text-green-800 font-bold text-lg sm:text-xl">{winMessage}</p>
         </div>
 
         <button
           onClick={onPlayAgain}
-          className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.97] animate-scale-pop"
+          className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-10 py-4 rounded-xl text-lg sm:text-xl transition-all duration-200 cursor-pointer active:scale-[0.97] animate-scale-pop"
           style={{ animationDelay: "0.3s", opacity: 0 }}
         >
-          Jugar de nuevo!
+          ¡Jugar de nuevo!
         </button>
       </div>
     );
   }
 
   return (
-    <div className="text-center max-w-md mx-auto animate-bounce-in">
+    <div className="text-center max-w-md sm:max-w-lg mx-auto animate-bounce-in">
       {/* Sad face icon */}
-      <div className="w-28 h-28 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+      <div className="w-32 h-32 sm:w-36 sm:h-36 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
         <svg
-          className="w-14 h-14 text-red-400"
+          className="w-16 h-16 sm:w-18 sm:h-18 text-red-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -75,24 +75,24 @@ export function ResultScreen({
         </svg>
       </div>
 
-      <h2 className="text-3xl font-extrabold text-gray-brand mb-1">
-        Casi casi!
+      <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-brand mb-2">
+        ¡Casi casi!
       </h2>
-      <p className="text-gray-400 mb-4">
-        No te preocupes, la proxima seguro la clavas!
+      <p className="text-gray-400 mb-5 text-lg sm:text-xl">
+        No te preocupes, ¡la próxima seguro la clavás!
       </p>
 
       {correctAnswer && (
-        <div className="mb-6 animate-slide-up">
-          <p className="text-gray-400 mb-2 text-xs uppercase tracking-wider font-semibold">
+        <div className="mb-7 animate-slide-up">
+          <p className="text-gray-400 mb-2 text-sm sm:text-base uppercase tracking-wider font-semibold">
             La respuesta correcta era
           </p>
-          <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-4">
+          <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-5 sm:p-6">
             <div className="flex items-center justify-center gap-2">
-              <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="w-6 h-6 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-green-800 font-bold">{correctAnswer}</p>
+              <p className="text-green-800 font-bold text-lg sm:text-xl">{correctAnswer}</p>
             </div>
           </div>
         </div>
@@ -100,10 +100,10 @@ export function ResultScreen({
 
       <button
         onClick={onPlayAgain}
-        className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.97] animate-scale-pop"
+        className="bg-orange-brand hover:bg-orange-dark text-white font-bold px-10 py-4 rounded-xl text-lg sm:text-xl transition-all duration-200 cursor-pointer active:scale-[0.97] animate-scale-pop"
         style={{ animationDelay: "0.3s", opacity: 0 }}
       >
-        Intentar de nuevo!
+        ¡Intentar de nuevo!
       </button>
     </div>
   );

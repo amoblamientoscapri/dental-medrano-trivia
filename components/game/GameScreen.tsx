@@ -79,10 +79,10 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
 
       <div
         key={animKey}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 animate-slide-up"
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-10 animate-slide-up"
       >
-        <div className="mb-4 text-center">
-          <span className="inline-block bg-orange-brand/10 text-orange-brand text-xs font-bold px-3 py-1 rounded-full animate-tick">
+        <div className="mb-5 text-center">
+          <span className="inline-block bg-orange-brand/10 text-orange-brand text-sm sm:text-base font-bold px-4 py-1.5 rounded-full animate-tick">
             Pregunta {currentIndex + 1} de {questions.length}
           </span>
         </div>

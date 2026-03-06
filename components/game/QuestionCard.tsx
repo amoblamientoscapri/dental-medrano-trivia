@@ -20,28 +20,28 @@ export function QuestionCard({
   const isWrongAnswer = showFeedback && selectedOption !== null && selectedOption !== question.correctIndex;
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <h2 className="text-lg sm:text-xl font-bold text-gray-brand mb-6 text-center leading-relaxed">
+    <div className="w-full max-w-lg sm:max-w-xl mx-auto">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-brand mb-7 text-center leading-relaxed">
         {question.text}
       </h2>
 
       {/* Feedback banner */}
       {showFeedback && (
         <div
-          className={`text-center mb-4 py-2 px-4 rounded-xl text-sm font-bold animate-bounce-in ${
+          className={`text-center mb-5 py-3 px-5 rounded-xl text-base sm:text-lg font-bold animate-bounce-in ${
             isCorrectAnswer
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }`}
         >
-          {isCorrectAnswer ? "Correcto!!" : "Incorrecto!"}
+          {isCorrectAnswer ? "¡¡Correcto!!" : "¡Incorrecto!"}
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {question.options.map((option, i) => {
           let btnClass =
-            "option-btn w-full text-left p-4 rounded-xl border-2 font-medium transition-all duration-200 ";
+            "option-btn w-full text-left p-5 sm:p-6 rounded-xl border-2 font-medium transition-all duration-200 ";
 
           let extraAnim = "";
 
@@ -72,9 +72,9 @@ export function QuestionCard({
               className={`${btnClass} ${extraAnim} animate-slide-up ${staggerClass}`}
               style={{ opacity: 0 }}
             >
-              <span className="inline-flex items-center gap-3">
+              <span className="inline-flex items-center gap-3 sm:gap-4">
                 <span
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all duration-200 ${
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg font-bold shrink-0 transition-all duration-200 ${
                     showFeedback && i === question.correctIndex
                       ? "bg-green-500 text-white"
                       : showFeedback &&
@@ -85,20 +85,20 @@ export function QuestionCard({
                   }`}
                 >
                   {showFeedback && i === question.correctIndex ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   ) : showFeedback &&
                     i === selectedOption &&
                     i !== question.correctIndex ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   ) : (
                     letters[i]
                   )}
                 </span>
-                <span className="text-sm sm:text-base">{option}</span>
+                <span className="text-base sm:text-lg md:text-xl">{option}</span>
               </span>
             </button>
           );
