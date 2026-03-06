@@ -29,20 +29,16 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
       setShowFeedback(true);
 
       if (isCorrect) {
-        // Correct answer
         setTimeout(() => {
           if (currentIndex + 1 >= questions.length) {
-            // Won the game!
             setPhase("won");
           } else {
-            // Next question
             setCurrentIndex((prev) => prev + 1);
             setSelectedOption(null);
             setShowFeedback(false);
           }
         }, 1200);
       } else {
-        // Wrong answer - show correct answer then go to lost screen
         setCorrectAnswerText(question.options[question.correctIndex]);
         setTimeout(() => {
           setPhase("lost");
@@ -53,22 +49,15 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
   );
 
   const handlePlayAgain = useCallback(() => {
-    // Redirect to home to get fresh random questions
     window.location.href = "/";
   }, []);
 
-  if (phase === "won") {
-    return (
-      <ResultScreen won={true} winMessage={winMessage} onPlayAgain={handlePlayAgain} />
-    );
-  }
-
-  if (phase === "lost") {
+  if (phase === "won" || phase === "lost") {
     return (
       <ResultScreen
-        won={false}
+        won={phase === "won"}
         winMessage={winMessage}
-        correctAnswer={correctAnswerText}
+        correctAnswer={phase === "lost" ? correctAnswerText : undefined}
         onPlayAgain={handlePlayAgain}
       />
     );
@@ -78,18 +67,20 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
     <div>
       <ProgressBar current={currentIndex} total={questions.length} />
 
-      <div className="mb-4 text-center">
-        <span className="text-sm text-gray-400 font-medium">
-          Pregunta {currentIndex + 1} de {questions.length}
-        </span>
-      </div>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+        <div className="mb-4 text-center">
+          <span className="text-sm text-gray-400 font-medium">
+            Pregunta {currentIndex + 1} de {questions.length}
+          </span>
+        </div>
 
-      <QuestionCard
-        question={questions[currentIndex]}
-        onAnswer={handleAnswer}
-        selectedOption={selectedOption}
-        showFeedback={showFeedback}
-      />
+        <QuestionCard
+          question={questions[currentIndex]}
+          onAnswer={handleAnswer}
+          selectedOption={selectedOption}
+          showFeedback={showFeedback}
+        />
+      </div>
     </div>
   );
 }
