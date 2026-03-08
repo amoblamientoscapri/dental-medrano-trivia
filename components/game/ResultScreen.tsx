@@ -52,6 +52,13 @@ export function ResultScreen({
         >
           ¡Jugar de nuevo!
         </button>
+
+        <button
+          onClick={() => { window.location.href = "/"; }}
+          className="block mx-auto mt-3 text-sm text-gray-400 hover:text-orange-brand transition-colors cursor-pointer"
+        >
+          Volver al menú
+        </button>
       </div>
     );
   }
@@ -104,6 +111,13 @@ export function ResultScreen({
         style={{ animationDelay: "0.3s", opacity: 0 }}
       >
         ¡Intentar de nuevo!
+      </button>
+
+      <button
+        onClick={() => { window.location.href = "/"; }}
+        className="block mx-auto mt-3 text-sm text-gray-400 hover:text-orange-brand transition-colors cursor-pointer"
+      >
+        Volver al menú
       </button>
     </div>
   );
