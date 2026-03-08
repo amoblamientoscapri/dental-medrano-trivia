@@ -4,7 +4,7 @@
   "description": "Demostrá cuánto sabés sobre odontología y ganá premios!",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "landscape",
+  "orientation": "any",
   "theme_color": "#F47920",
   "background_color": "#FFF7ED",
   "icons": [
