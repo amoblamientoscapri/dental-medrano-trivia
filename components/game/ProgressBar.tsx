@@ -7,11 +7,11 @@ interface ProgressBarProps {
 
 export function ProgressBar({ current, total }: ProgressBarProps) {
   return (
-    <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-10">
       {Array.from({ length: total }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 sm:gap-4">
+        <div key={i} className="flex items-center gap-2 sm:gap-4">
           <div
-            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-base sm:text-lg font-bold transition-all duration-300 ${
+            className={`w-9 h-9 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-sm sm:text-lg font-bold transition-all duration-300 ${
               i < current
                 ? "bg-green-500 text-white scale-100"
                 : i === current
@@ -29,7 +29,7 @@ export function ProgressBar({ current, total }: ProgressBarProps) {
           </div>
           {i < total - 1 && (
             <div
-              className={`w-10 sm:w-12 h-1.5 rounded transition-all duration-300 ${
+              className={`w-6 sm:w-12 h-1.5 rounded transition-all duration-300 ${
                 i < current ? "bg-green-500" : "bg-gray-200"
               }`}
             />

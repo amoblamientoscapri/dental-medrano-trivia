@@ -19,3 +19,15 @@ export interface GameState {
   selectedOption: number | null;
   showFeedback: boolean;
 }
+
+export interface Registration {
+  id: string;
+  nombre: string;
+  telefono: string;
+  correo: string;
+  edad: number;
+  esEstudiante: boolean;
+  especialidad?: string;
+  timestamp: string;
+  gameResult?: "won" | "lost";
+}
