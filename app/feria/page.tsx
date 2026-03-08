@@ -1,11 +1,11 @@
 import { getRandomQuestions, getConfig } from "@/lib/kv";
-import { GameScreen } from "@/components/game/GameScreen";
+import { FeriaClient } from "@/components/FeriaClient";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function JugarPage() {
+export default async function FeriaPage() {
   const config = await getConfig();
   const questions = await getRandomQuestions(config.questionsPerRound);
 
@@ -28,14 +28,5 @@ export default async function JugarPage() {
     );
   }
 
-  return (
-    <main className="min-h-dvh flex flex-col items-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6 py-3 sm:py-8">
-      <div className="w-full max-w-lg sm:max-w-xl mx-auto">
-        <div className="flex justify-center mb-3 sm:mb-8">
-          <Logo size="xs" />
-        </div>
-        <GameScreen questions={questions} winMessage={config.winMessage} />
-      </div>
-    </main>
-  );
+  return <FeriaClient questions={questions} winMessage={config.winMessage} />;
 }

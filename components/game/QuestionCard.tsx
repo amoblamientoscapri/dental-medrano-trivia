@@ -21,7 +21,7 @@ export function QuestionCard({
 
   return (
     <div className="w-full max-w-lg sm:max-w-xl mx-auto">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-brand mb-7 text-center leading-relaxed">
+      <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-brand mb-4 text-center leading-relaxed">
         {question.text}
       </h2>
 
@@ -38,10 +38,10 @@ export function QuestionCard({
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-2.5">
         {question.options.map((option, i) => {
           let btnClass =
-            "option-btn w-full text-left p-5 sm:p-6 rounded-xl border-2 font-medium transition-all duration-200 ";
+            "option-btn w-full text-left p-3 sm:p-6 rounded-xl border-2 font-medium transition-all duration-200 ";
 
           let extraAnim = "";
 
@@ -74,7 +74,7 @@ export function QuestionCard({
             >
               <span className="inline-flex items-center gap-3 sm:gap-4">
                 <span
-                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg font-bold shrink-0 transition-all duration-200 ${
+                  className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm sm:text-lg font-bold shrink-0 transition-all duration-200 ${
                     showFeedback && i === question.correctIndex
                       ? "bg-green-500 text-white"
                       : showFeedback &&

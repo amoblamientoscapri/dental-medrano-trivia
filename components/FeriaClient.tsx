@@ -1,0 +1,75 @@
+"use client";
+
+import { useState } from "react";
+import type { Question } from "@/lib/types";
+import { RegistrationForm, type RegistrationData } from "./RegistrationForm";
+import { GameScreen } from "./game/GameScreen";
+import { Logo } from "./Logo";
+
+interface FeriaClientProps {
+  questions: Question[];
+  winMessage: string;
+}
+
+type FeriaPhase = "register" | "playing";
+
+export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
+  const [phase, setPhase] = useState<FeriaPhase>("register");
+  const [registrationId, setRegistrationId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleRegistration(data: RegistrationData) {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/registros", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const reg = await res.json();
+        setRegistrationId(reg.id);
+        setPhase("playing");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (phase === "register") {
+    return (
+      <main className="min-h-dvh flex flex-col items-center justify-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6 py-3">
+        <div className="w-full max-w-2xl mx-auto">
+          <div className="flex justify-center mb-3">
+            <Logo size="xs" />
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-5 sm:p-8">
+            <div className="text-center mb-4">
+              <span className="inline-block bg-orange-brand/10 text-orange-brand text-sm font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+                Registrate para jugar
+              </span>
+            </div>
+
+            <RegistrationForm onSubmit={handleRegistration} loading={loading} />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-dvh flex flex-col items-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6 py-3 sm:py-8">
+      <div className="w-full max-w-lg sm:max-w-xl mx-auto">
+        <div className="flex justify-center mb-3 sm:mb-8">
+          <Logo size="xs" />
+        </div>
+        <GameScreen
+          questions={questions}
+          winMessage={winMessage}
+          registrationId={registrationId}
+        />
+      </div>
+    </main>
+  );
+}

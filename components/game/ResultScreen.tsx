@@ -21,9 +21,9 @@ export function ResultScreen({
         <Confetti />
 
         {/* Trophy */}
-        <div className="w-32 h-32 sm:w-36 sm:h-36 mx-auto mb-5 rounded-full bg-orange-brand/10 flex items-center justify-center glow-orange">
+        <div className="w-20 h-20 sm:w-36 sm:h-36 mx-auto mb-3 rounded-full bg-orange-brand/10 flex items-center justify-center glow-orange">
           <svg
-            className="w-16 h-16 sm:w-18 sm:h-18 text-orange-brand"
+            className="w-10 h-10 sm:w-18 sm:h-18 text-orange-brand"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -31,14 +31,14 @@ export function ResultScreen({
           </svg>
         </div>
 
-        <h2 className="text-5xl sm:text-6xl font-extrabold text-gray-brand mb-2 animate-sparkle">
+        <h2 className="text-3xl sm:text-6xl font-extrabold text-gray-brand mb-2 animate-sparkle">
           ¡¡GANASTE!!
         </h2>
-        <p className="text-orange-brand font-bold text-xl sm:text-2xl mb-5">
+        <p className="text-orange-brand font-bold text-lg sm:text-2xl mb-3">
           ¡Felicitaciones!
         </p>
 
-        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 sm:p-7 mb-7 animate-slide-up">
+        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-4 sm:p-7 mb-5 animate-slide-up">
           <svg className="w-10 h-10 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
           </svg>
@@ -59,9 +59,9 @@ export function ResultScreen({
   return (
     <div className="text-center max-w-md sm:max-w-lg mx-auto animate-bounce-in">
       {/* Sad face icon */}
-      <div className="w-32 h-32 sm:w-36 sm:h-36 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
+      <div className="w-20 h-20 sm:w-36 sm:h-36 mx-auto mb-3 rounded-full bg-red-50 flex items-center justify-center">
         <svg
-          className="w-16 h-16 sm:w-18 sm:h-18 text-red-400"
+          className="w-10 h-10 sm:w-18 sm:h-18 text-red-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -75,15 +75,15 @@ export function ResultScreen({
         </svg>
       </div>
 
-      <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-brand mb-2">
+      <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-brand mb-2">
         ¡Casi casi!
       </h2>
-      <p className="text-gray-400 mb-5 text-lg sm:text-xl">
+      <p className="text-gray-400 mb-3 text-base sm:text-xl">
         No te preocupes, ¡la próxima seguro la clavás!
       </p>
 
       {correctAnswer && (
-        <div className="mb-7 animate-slide-up">
+        <div className="mb-5 animate-slide-up">
           <p className="text-gray-400 mb-2 text-sm sm:text-base uppercase tracking-wider font-semibold">
             La respuesta correcta era
           </p>

@@ -10,9 +10,10 @@ import { playCorrect, playWrong, playWin, playStart } from "@/lib/sounds";
 interface GameScreenProps {
   questions: Question[];
   winMessage: string;
+  registrationId?: string | null;
 }
 
-export function GameScreen({ questions, winMessage }: GameScreenProps) {
+export function GameScreen({ questions, winMessage, registrationId }: GameScreenProps) {
   const [phase, setPhase] = useState<GamePhase>("playing");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -23,6 +24,19 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
   useEffect(() => {
     playStart();
   }, []);
+
+  // Fire-and-forget: update registration with game result
+  const reportResult = useCallback(
+    (result: "won" | "lost") => {
+      if (!registrationId) return;
+      fetch(`/api/registros/${registrationId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameResult: result }),
+      }).catch(() => {});
+    },
+    [registrationId]
+  );
 
   const handleAnswer = useCallback(
     (optionIndex: number) => {
@@ -40,6 +54,7 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
           if (currentIndex + 1 >= questions.length) {
             playWin();
             setPhase("won");
+            reportResult("won");
           } else {
             setCurrentIndex((prev) => prev + 1);
             setSelectedOption(null);
@@ -52,15 +67,16 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
         setCorrectAnswerText(question.options[question.correctIndex]);
         setTimeout(() => {
           setPhase("lost");
+          reportResult("lost");
         }, 2200);
       }
     },
-    [currentIndex, questions, showFeedback]
+    [currentIndex, questions, showFeedback, reportResult]
   );
 
   const handlePlayAgain = useCallback(() => {
-    window.location.href = "/";
-  }, []);
+    window.location.href = registrationId ? "/feria" : "/";
+  }, [registrationId]);
 
   if (phase === "won" || phase === "lost") {
     return (
@@ -79,9 +95,9 @@ export function GameScreen({ questions, winMessage }: GameScreenProps) {
 
       <div
         key={animKey}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-10 animate-slide-up"
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8 md:p-10 animate-slide-up"
       >
-        <div className="mb-5 text-center">
+        <div className="mb-3 text-center">
           <span className="inline-block bg-orange-brand/10 text-orange-brand text-sm sm:text-base font-bold px-4 py-1.5 rounded-full animate-tick">
             Pregunta {currentIndex + 1} de {questions.length}
           </span>
