@@ -15,7 +15,7 @@ interface GameScreenProps {
 }
 
 export function GameScreen({ questions, winMessage, registrationId }: GameScreenProps) {
-  const [phase, setPhase] = useState<GamePhase>("playing");
+  const [phase, setPhase] = useState<GamePhase>(registrationId ? "playing" : "idle");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -23,8 +23,8 @@ export function GameScreen({ questions, winMessage, registrationId }: GameScreen
   const [animKey, setAnimKey] = useState(0);
 
   useEffect(() => {
-    playStart();
-  }, []);
+    if (phase === "playing") playStart();
+  }, [phase]);
 
   const reportResult = useCallback(
     (result: "won" | "lost") => {
@@ -77,6 +77,40 @@ export function GameScreen({ questions, winMessage, registrationId }: GameScreen
   const handlePlayAgain = useCallback(() => {
     window.location.href = registrationId ? "/feria" : "/jugar";
   }, [registrationId]);
+
+  if (phase === "idle") {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-0">
+        <div className="text-center max-w-lg mx-auto animate-bounce-in">
+          <div className="mb-4 animate-float">
+            <Logo size="sm" className="mx-auto drop-shadow-lg" />
+          </div>
+
+          <h1 className="text-3xl font-extrabold text-gray-brand mb-1">
+            ¡TRIVIA
+            <span className="text-orange-brand"> DENTAL!</span>
+          </h1>
+          <p className="text-gray-400 mb-6 text-base">
+            Respondé {questions.length} preguntas y ganá un premio
+          </p>
+
+          <button
+            onClick={() => setPhase("playing")}
+            className="bg-orange-brand hover:bg-orange-dark text-white font-extrabold text-xl px-12 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer active:scale-[0.97]"
+          >
+            ¡JUGAR!
+          </button>
+
+          <button
+            onClick={() => { window.location.href = "/"; }}
+            className="block mx-auto mt-4 text-sm text-gray-400 hover:text-orange-brand transition-colors cursor-pointer"
+          >
+            Volver al menú
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (phase === "won" || phase === "lost") {
     return (
