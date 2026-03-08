@@ -75,7 +75,7 @@ export function GameScreen({ questions, winMessage, registrationId }: GameScreen
   );
 
   const handlePlayAgain = useCallback(() => {
-    window.location.href = registrationId ? "/feria" : "/";
+    window.location.href = registrationId ? "/feria" : "/jugar";
   }, [registrationId]);
 
   if (phase === "won" || phase === "lost") {
