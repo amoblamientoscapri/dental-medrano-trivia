@@ -38,13 +38,13 @@ export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
 
   if (phase === "register") {
     return (
-      <main className="min-h-dvh flex flex-col items-center justify-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6 py-3">
+      <main className="min-h-dvh flex flex-col items-center justify-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 py-3">
         <div className="w-full max-w-2xl mx-auto">
           <div className="flex justify-center mb-3">
             <Logo size="xs" />
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-5 sm:p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-5">
             <div className="text-center mb-4">
               <span className="inline-block bg-orange-brand/10 text-orange-brand text-sm font-bold px-4 py-1 rounded-full uppercase tracking-wider">
                 Registrate para jugar
@@ -59,17 +59,12 @@ export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
   }
 
   return (
-    <main className="min-h-dvh flex flex-col items-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6 py-3 sm:py-8">
-      <div className="w-full max-w-lg sm:max-w-xl mx-auto">
-        <div className="flex justify-center mb-3 sm:mb-8">
-          <Logo size="xs" />
-        </div>
-        <GameScreen
-          questions={questions}
-          winMessage={winMessage}
-          registrationId={registrationId}
-        />
-      </div>
+    <main className="h-dvh flex flex-col bg-gradient-to-b from-orange-50 via-white to-orange-50 px-6 py-2 overflow-hidden max-w-3xl mx-auto">
+      <GameScreen
+        questions={questions}
+        winMessage={winMessage}
+        registrationId={registrationId}
+      />
     </main>
   );
 }
