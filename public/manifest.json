@@ -2,7 +2,7 @@
   "name": "Trivia Dental Medrano",
   "short_name": "Trivia Dental",
   "description": "Demostrá cuánto sabés sobre odontología y ganá premios!",
-  "start_url": "/feria",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "landscape",
   "theme_color": "#F47920",
