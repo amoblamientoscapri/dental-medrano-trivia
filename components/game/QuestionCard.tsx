@@ -20,7 +20,7 @@ export function QuestionCard({
 
   return (
     <div className="w-full">
-      <h2 className="text-lg font-bold text-gray-brand mb-3 text-center leading-snug">
+      <h2 className="text-xl font-bold text-gray-brand mb-3 text-center leading-snug">
         {question.text}
       </h2>
 
@@ -40,7 +40,7 @@ export function QuestionCard({
       <div className="space-y-2">
         {question.options.map((option, i) => {
           let btnClass =
-            "option-btn w-full text-left py-2.5 px-3 rounded-xl border-2 font-medium transition-all duration-200 ";
+            "option-btn w-full text-left py-3 px-4 rounded-xl border-2 font-medium transition-all duration-200 ";
 
           let extraAnim = "";
 
@@ -73,7 +73,7 @@ export function QuestionCard({
             >
               <span className="inline-flex items-center gap-3">
                 <span
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-200 ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all duration-200 ${
                     showFeedback && i === question.correctIndex
                       ? "bg-green-500 text-white"
                       : showFeedback &&
@@ -97,7 +97,7 @@ export function QuestionCard({
                     letters[i]
                   )}
                 </span>
-                <span className="text-sm">{option}</span>
+                <span className="text-base">{option}</span>
               </span>
             </button>
           );
