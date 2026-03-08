@@ -53,6 +53,13 @@ export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
 
             <RegistrationForm onSubmit={handleRegistration} loading={loading} />
           </div>
+
+          <button
+            onClick={() => setPhase("playing")}
+            className="block mx-auto mt-3 text-sm text-gray-400 hover:text-orange-brand transition-colors underline underline-offset-2"
+          >
+            Jugar sin registro
+          </button>
         </div>
       </main>
     );

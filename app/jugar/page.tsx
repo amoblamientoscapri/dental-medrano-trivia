@@ -2,13 +2,8 @@ import { getRandomQuestions, getConfig } from "@/lib/kv";
 import { GameScreen } from "@/components/game/GameScreen";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
-import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  manifest: "/manifest-jugar.json",
-};
 
 export default async function JugarPage() {
   const config = await getConfig();
