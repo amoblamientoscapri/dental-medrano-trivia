@@ -2,8 +2,13 @@ import { getRandomQuestions, getConfig } from "@/lib/kv";
 import { GameScreen } from "@/components/game/GameScreen";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  manifest: "/manifest-jugar.json",
+};
 
 export default async function JugarPage() {
   const config = await getConfig();
@@ -11,10 +16,10 @@ export default async function JugarPage() {
 
   if (questions.length === 0) {
     return (
-      <main className="min-h-dvh flex flex-col items-center justify-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6">
+      <main className="min-h-dvh flex flex-col items-center justify-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4">
         <Logo size="sm" className="mb-6" />
         <div className="text-center">
-          <p className="text-gray-500 mb-4 text-lg sm:text-xl">
+          <p className="text-gray-500 mb-4 text-lg">
             No hay preguntas cargadas todavía.
           </p>
           <Link
@@ -29,13 +34,8 @@ export default async function JugarPage() {
   }
 
   return (
-    <main className="min-h-dvh flex flex-col items-center bg-gradient-to-b from-orange-50 via-white to-orange-50 px-4 sm:px-6 py-3 sm:py-8">
-      <div className="w-full max-w-lg sm:max-w-xl mx-auto">
-        <div className="flex justify-center mb-3 sm:mb-8">
-          <Logo size="xs" />
-        </div>
-        <GameScreen questions={questions} winMessage={config.winMessage} />
-      </div>
+    <main className="h-dvh flex flex-col bg-gradient-to-b from-orange-50 via-white to-orange-50 px-6 py-2 overflow-hidden max-w-3xl mx-auto">
+      <GameScreen questions={questions} winMessage={config.winMessage} />
     </main>
   );
 }

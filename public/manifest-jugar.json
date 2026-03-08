@@ -1,9 +1,9 @@
 {
-  "id": "/feria",
-  "name": "Trivia Dental - Feria",
-  "short_name": "Trivia Feria",
+  "id": "/jugar",
+  "name": "Trivia Dental Medrano",
+  "short_name": "Trivia Dental",
   "description": "Demostrá cuánto sabés sobre odontología y ganá premios!",
-  "start_url": "/feria",
+  "start_url": "/jugar",
   "display": "standalone",
   "orientation": "landscape",
   "theme_color": "#F47920",

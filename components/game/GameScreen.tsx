@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import type { Question, GamePhase } from "@/lib/types";
+import { Logo } from "../Logo";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionCard } from "./QuestionCard";
 import { ResultScreen } from "./ResultScreen";
@@ -25,7 +26,6 @@ export function GameScreen({ questions, winMessage, registrationId }: GameScreen
     playStart();
   }, []);
 
-  // Fire-and-forget: update registration with game result
   const reportResult = useCallback(
     (result: "won" | "lost") => {
       if (!registrationId) return;
@@ -80,36 +80,42 @@ export function GameScreen({ questions, winMessage, registrationId }: GameScreen
 
   if (phase === "won" || phase === "lost") {
     return (
-      <ResultScreen
-        won={phase === "won"}
-        winMessage={winMessage}
-        correctAnswer={phase === "lost" ? correctAnswerText : undefined}
-        onPlayAgain={handlePlayAgain}
-      />
+      <div className="flex-1 flex items-center justify-center min-h-0">
+        <ResultScreen
+          won={phase === "won"}
+          winMessage={winMessage}
+          correctAnswer={phase === "lost" ? correctAnswerText : undefined}
+          onPlayAgain={handlePlayAgain}
+        />
+      </div>
     );
   }
 
   return (
-    <div>
-      <ProgressBar current={currentIndex} total={questions.length} />
-
-      <div
-        key={animKey}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8 md:p-10 animate-slide-up"
-      >
-        <div className="mb-3 text-center">
-          <span className="inline-block bg-orange-brand/10 text-orange-brand text-sm sm:text-base font-bold px-4 py-1.5 rounded-full animate-tick">
-            Pregunta {currentIndex + 1} de {questions.length}
-          </span>
-        </div>
-
-        <QuestionCard
-          question={questions[currentIndex]}
-          onAnswer={handleAnswer}
-          selectedOption={selectedOption}
-          showFeedback={showFeedback}
-        />
+    <>
+      {/* Compact header: logo + progress + badge in ONE row */}
+      <div className="flex items-center justify-between shrink-0 px-1 mb-2">
+        <Logo size="xs" className="h-9 w-auto" />
+        <ProgressBar current={currentIndex} total={questions.length} />
+        <span className="inline-block bg-orange-brand/10 text-orange-brand text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+          Pregunta {currentIndex + 1} de {questions.length}
+        </span>
       </div>
-    </div>
+
+      {/* Game card fills remaining height */}
+      <div className="flex-1 flex items-center justify-center min-h-0">
+        <div
+          key={animKey}
+          className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 w-full animate-slide-up"
+        >
+          <QuestionCard
+            question={questions[currentIndex]}
+            onAnswer={handleAnswer}
+            selectedOption={selectedOption}
+            showFeedback={showFeedback}
+          />
+        </div>
+      </div>
+    </>
   );
 }
