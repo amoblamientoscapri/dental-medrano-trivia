@@ -28,6 +28,29 @@ export interface Registration {
   edad: number;
   esEstudiante: boolean;
   especialidad?: string;
+  localidad?: string;
+  provincia?: string;
   timestamp: string;
   gameResult?: "won" | "lost";
+  prize?: Prize | null;
+}
+
+export interface Prize {
+  id: string;
+  code: string;
+  registrationId: string;
+  status: "pending" | "redeemed";
+  redeemedAt?: string | null;
+  branchId?: string | null;
+  branch?: Branch | null;
+  emailSent: boolean;
+  emailSentAt?: string | null;
+  createdAt: string;
+}
+
+export interface Branch {
+  id: string;
+  name: string;
+  address: string;
+  active: boolean;
 }

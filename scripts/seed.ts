@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { PrismaClient } from "@prisma/client";
 import { SEED_QUESTIONS } from "../lib/questions-data";
 
 async function seed() {
@@ -24,6 +25,26 @@ async function seed() {
   await redis.set("game-config", defaultConfig);
 
   console.log("Done! Questions and config seeded to Upstash Redis.");
+
+  // Seed default branches
+  const prisma = new PrismaClient();
+
+  const existingBranches = await prisma.branch.count();
+  if (existingBranches === 0) {
+    console.log("Seeding default branches...");
+    await prisma.branch.createMany({
+      data: [
+        { name: "Sucursal Centro", address: "Av. Medrano 123, CABA" },
+        { name: "Sucursal Norte", address: "Av. Cabildo 456, CABA" },
+        { name: "Sucursal Sur", address: "Av. Caseros 789, CABA" },
+      ],
+    });
+    console.log("3 default branches created.");
+  } else {
+    console.log(`${existingBranches} branches already exist, skipping.`);
+  }
+
+  await prisma.$disconnect();
 }
 
 seed().catch(console.error);
