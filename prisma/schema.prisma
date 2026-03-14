@@ -1,0 +1,45 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Registration {
+  id            String   @id @default(cuid())
+  nombre        String
+  telefono      String
+  correo        String
+  edad          Int
+  esEstudiante  Boolean
+  especialidad  String?
+  localidad     String?
+  provincia     String?
+  gameResult    String?
+  timestamp     DateTime @default(now())
+  prize         Prize?
+}
+
+model Prize {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  registrationId String    @unique
+  registration   Registration @relation(fields: [registrationId], references: [id])
+  status         String    @default("pending")
+  redeemedAt     DateTime?
+  branchId       String?
+  branch         Branch?   @relation(fields: [branchId], references: [id])
+  emailSent      Boolean   @default(false)
+  emailSentAt    DateTime?
+  createdAt      DateTime  @default(now())
+}
+
+model Branch {
+  id      String  @id @default(cuid())
+  name    String
+  address String
+  active  Boolean @default(true)
+  prizes  Prize[]
+}

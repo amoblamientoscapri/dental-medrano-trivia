@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import type { Question, GamePhase } from "@/lib/types";
+import type { Question, GamePhase, Branch } from "@/lib/types";
 import { Logo } from "../Logo";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionCard } from "./QuestionCard";
@@ -12,28 +12,48 @@ interface GameScreenProps {
   questions: Question[];
   winMessage: string;
   registrationId?: string | null;
+  playerName?: string;
 }
 
-export function GameScreen({ questions, winMessage, registrationId }: GameScreenProps) {
+interface PrizeData {
+  code: string;
+  branches: Branch[];
+}
+
+export function GameScreen({ questions, winMessage, registrationId, playerName }: GameScreenProps) {
   const [phase, setPhase] = useState<GamePhase>(registrationId ? "playing" : "idle");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [correctAnswerText, setCorrectAnswerText] = useState<string>("");
   const [animKey, setAnimKey] = useState(0);
+  const [prizeData, setPrizeData] = useState<PrizeData | null>(null);
 
   useEffect(() => {
     if (phase === "playing") playStart();
   }, [phase]);
 
   const reportResult = useCallback(
-    (result: "won" | "lost") => {
+    async (result: "won" | "lost") => {
       if (!registrationId) return;
-      fetch(`/api/registros/${registrationId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameResult: result }),
-      }).catch(() => {});
+      try {
+        const res = await fetch(`/api/registros/${registrationId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gameResult: result }),
+        });
+        if (res.ok && result === "won") {
+          const data = await res.json();
+          if (data.prize) {
+            setPrizeData({
+              code: data.prize.code,
+              branches: data.branches || [],
+            });
+          }
+        }
+      } catch {
+        // ignore
+      }
     },
     [registrationId]
   );
@@ -120,6 +140,9 @@ export function GameScreen({ questions, winMessage, registrationId }: GameScreen
           winMessage={winMessage}
           correctAnswer={phase === "lost" ? correctAnswerText : undefined}
           onPlayAgain={handlePlayAgain}
+          playerName={playerName}
+          prizeCode={prizeData?.code}
+          branches={prizeData?.branches}
         />
       </div>
     );

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { Question, GameConfig, Registration } from "@/lib/types";
+import type { Question, GameConfig, Registration, Branch } from "@/lib/types";
 
-type Tab = "preguntas" | "registros";
+type Tab = "preguntas" | "registros" | "sucursales";
 
 export default function AdminDashboard() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -25,6 +25,11 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("preguntas");
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [regLoading, setRegLoading] = useState(false);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [branchLoading, setBranchLoading] = useState(false);
+  const [newBranch, setNewBranch] = useState({ name: "", address: "" });
+  const [editingBranchId, setEditingBranchId] = useState<string | null>(null);
+  const [editBranchData, setEditBranchData] = useState({ name: "", address: "" });
   const router = useRouter();
 
   const fetchData = useCallback(async () => {
@@ -50,13 +55,24 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  const fetchBranches = useCallback(async () => {
+    setBranchLoading(true);
+    try {
+      const res = await fetch("/api/sucursales");
+      if (res.ok) setBranches(await res.json());
+    } finally {
+      setBranchLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   useEffect(() => {
     if (tab === "registros") fetchRegistrations();
-  }, [tab, fetchRegistrations]);
+    if (tab === "sucursales") fetchBranches();
+  }, [tab, fetchRegistrations, fetchBranches]);
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -102,9 +118,58 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleResendEmail(code: string) {
+    const res = await fetch(`/api/premios/${code}/resend-email`, { method: "POST" });
+    if (res.ok) {
+      alert("Email reenviado correctamente");
+      fetchRegistrations();
+    } else {
+      alert("Error al reenviar email");
+    }
+  }
+
+  // Branch handlers
+  async function handleCreateBranch() {
+    if (!newBranch.name || !newBranch.address) return;
+    const res = await fetch("/api/sucursales", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newBranch),
+    });
+    if (res.ok) {
+      setNewBranch({ name: "", address: "" });
+      fetchBranches();
+    }
+  }
+
+  async function handleUpdateBranch(id: string) {
+    const res = await fetch(`/api/sucursales/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editBranchData),
+    });
+    if (res.ok) {
+      setEditingBranchId(null);
+      fetchBranches();
+    }
+  }
+
+  async function handleToggleBranch(id: string, active: boolean) {
+    await fetch(`/api/sucursales/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !active }),
+    });
+    fetchBranches();
+  }
+
   function handleDownloadCSV() {
     const BOM = "\uFEFF";
-    const headers = ["Nombre", "Teléfono", "Email", "Edad", "Estudiante", "Especialidad", "Resultado", "Fecha"];
+    const headers = [
+      "Nombre", "Teléfono", "Email", "Edad", "Estudiante", "Especialidad",
+      "Localidad", "Provincia", "Resultado", "Premio", "Estado Premio",
+      "Sucursal Retiro", "Fecha Retiro", "Email Enviado", "Fecha"
+    ];
     const rows = registrations.map((r) => [
       r.nombre,
       r.telefono,
@@ -112,7 +177,14 @@ export default function AdminDashboard() {
       String(r.edad),
       r.esEstudiante ? "Sí" : "No",
       r.especialidad || "-",
+      r.localidad || "-",
+      r.provincia || "-",
       r.gameResult === "won" ? "Ganó" : r.gameResult === "lost" ? "Perdió" : "Sin jugar",
+      r.prize?.code || "-",
+      r.prize ? (r.prize.status === "redeemed" ? "Retirado" : "Pendiente") : "-",
+      r.prize?.branch?.name || "-",
+      r.prize?.redeemedAt ? new Date(r.prize.redeemedAt).toLocaleString("es-AR") : "-",
+      r.prize ? (r.prize.emailSent ? "Sí" : "No") : "-",
       new Date(r.timestamp).toLocaleString("es-AR"),
     ]);
 
@@ -148,6 +220,13 @@ export default function AdminDashboard() {
   const filtered = questions.filter((q) =>
     q.text.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Stats
+  const wonCount = registrations.filter((r) => r.gameResult === "won").length;
+  const lostCount = registrations.filter((r) => r.gameResult === "lost").length;
+  const prizeCount = registrations.filter((r) => r.prize).length;
+  const redeemedCount = registrations.filter((r) => r.prize?.status === "redeemed").length;
+  const pendingCount = prizeCount - redeemedCount;
 
   if (loading) {
     return (
@@ -260,6 +339,16 @@ export default function AdminDashboard() {
                 {registrations.length}
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setTab("sucursales")}
+            className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+              tab === "sucursales"
+                ? "bg-white text-orange-brand shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Sucursales
           </button>
         </div>
 
@@ -457,7 +546,7 @@ export default function AdminDashboard() {
           <>
             {/* Stats + Actions */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 flex-wrap">
                 <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 text-center">
                   <p className="text-2xl font-bold text-orange-brand">
                     {registrations.length}
@@ -466,15 +555,33 @@ export default function AdminDashboard() {
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 text-center">
                   <p className="text-2xl font-bold text-green-600">
-                    {registrations.filter((r) => r.gameResult === "won").length}
+                    {wonCount}
                   </p>
                   <p className="text-xs text-gray-500">Ganaron</p>
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 text-center">
                   <p className="text-2xl font-bold text-red-500">
-                    {registrations.filter((r) => r.gameResult === "lost").length}
+                    {lostCount}
                   </p>
                   <p className="text-xs text-gray-500">Perdieron</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 text-center">
+                  <p className="text-2xl font-bold text-purple-600">
+                    {prizeCount}
+                  </p>
+                  <p className="text-xs text-gray-500">Premios</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 text-center">
+                  <p className="text-2xl font-bold text-blue-600">
+                    {redeemedCount}
+                  </p>
+                  <p className="text-xs text-gray-500">Retirados</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 px-4 py-3 text-center">
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {pendingCount}
+                  </p>
+                  <p className="text-xs text-gray-500">Pendientes</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -520,7 +627,12 @@ export default function AdminDashboard() {
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Edad</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Estudiante</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Especialidad</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Localidad</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Resultado</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Premio</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Estado</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Sucursal</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Fecha</th>
                       </tr>
                     </thead>
@@ -542,6 +654,11 @@ export default function AdminDashboard() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-gray-600">{r.especialidad || "-"}</td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">
+                            {r.localidad ? (
+                              <span>{r.localidad}{r.provincia ? `, ${r.provincia}` : ""}</span>
+                            ) : "-"}
+                          </td>
                           <td className="px-4 py-3">
                             {r.gameResult === "won" ? (
                               <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold">
@@ -551,6 +668,46 @@ export default function AdminDashboard() {
                               <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold">
                                 Perdió
                               </span>
+                            ) : (
+                              <span className="text-gray-300">-</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-xs text-orange-brand font-bold">
+                            {r.prize?.code || "-"}
+                          </td>
+                          <td className="px-4 py-3">
+                            {r.prize ? (
+                              r.prize.status === "redeemed" ? (
+                                <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">
+                                  Retirado
+                                </span>
+                              ) : (
+                                <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-semibold">
+                                  Pendiente
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-gray-300">-</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">
+                            {r.prize?.branch?.name || "-"}
+                          </td>
+                          <td className="px-4 py-3">
+                            {r.prize ? (
+                              r.prize.emailSent ? (
+                                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              ) : (
+                                <button
+                                  onClick={() => handleResendEmail(r.prize!.code)}
+                                  className="text-xs text-red-500 hover:text-red-700 underline"
+                                  title="Reenviar email"
+                                >
+                                  Reenviar
+                                </button>
+                              )
                             ) : (
                               <span className="text-gray-300">-</span>
                             )}
@@ -568,6 +725,131 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ========== SUCURSALES TAB ========== */}
+        {tab === "sucursales" && (
+          <>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+              <h3 className="font-semibold text-gray-900 mb-3">Nueva sucursal</h3>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  placeholder="Nombre"
+                  value={newBranch.name}
+                  onChange={(e) => setNewBranch({ ...newBranch, name: e.target.value })}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Dirección"
+                  value={newBranch.address}
+                  onChange={(e) => setNewBranch({ ...newBranch, address: e.target.value })}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+                <button
+                  onClick={handleCreateBranch}
+                  disabled={!newBranch.name || !newBranch.address}
+                  className="bg-orange-brand hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                >
+                  + Agregar
+                </button>
+              </div>
+            </div>
+
+            {branchLoading ? (
+              <p className="text-center text-gray-400 py-8">Cargando...</p>
+            ) : branches.length === 0 ? (
+              <p className="text-center text-gray-400 py-8">No hay sucursales</p>
+            ) : (
+              <div className="space-y-2">
+                {branches.map((b) => (
+                  <div key={b.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                    {editingBranchId === b.id ? (
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <input
+                          type="text"
+                          value={editBranchData.name}
+                          onChange={(e) => setEditBranchData({ ...editBranchData, name: e.target.value })}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                        <input
+                          type="text"
+                          value={editBranchData.address}
+                          onChange={(e) => setEditBranchData({ ...editBranchData, address: e.target.value })}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleUpdateBranch(b.id)}
+                            className="bg-orange-brand hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            onClick={() => setEditingBranchId(null)}
+                            className="text-sm text-gray-600 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-semibold ${
+                            b.active
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-500"
+                          }`}>
+                            {b.active ? "Activa" : "Inactiva"}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900">{b.name}</p>
+                            <p className="text-sm text-gray-500 truncate">{b.address}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <button
+                            onClick={() => {
+                              setEditingBranchId(b.id);
+                              setEditBranchData({ name: b.name, address: b.address });
+                            }}
+                            className="text-xs text-gray-400 hover:text-orange-brand p-1.5 rounded hover:bg-orange-50 transition-colors"
+                            title="Editar"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleToggleBranch(b.id, b.active)}
+                            className={`text-xs p-1.5 rounded transition-colors ${
+                              b.active
+                                ? "text-gray-400 hover:text-red-600 hover:bg-red-50"
+                                : "text-gray-400 hover:text-green-600 hover:bg-green-50"
+                            }`}
+                            title={b.active ? "Desactivar" : "Activar"}
+                          >
+                            {b.active ? (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </>

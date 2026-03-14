@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, type FormEvent } from "react";
+import { LocalidadInput } from "./LocalidadInput";
 
 interface RegistrationFormProps {
   onSubmit: (data: RegistrationData) => void;
@@ -14,6 +15,8 @@ export interface RegistrationData {
   edad: number;
   esEstudiante: boolean;
   especialidad?: string;
+  localidad?: string;
+  provincia?: string;
 }
 
 export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
@@ -23,6 +26,8 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
   const [edad, setEdad] = useState("");
   const [esEstudiante, setEsEstudiante] = useState(false);
   const [especialidad, setEspecialidad] = useState("");
+  const [localidad, setLocalidad] = useState("");
+  const [provincia, setProvincia] = useState("");
 
   const telefonoRef = useRef<HTMLInputElement>(null);
   const correoRef = useRef<HTMLInputElement>(null);
@@ -42,6 +47,8 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
       edad: Number(edad),
       esEstudiante,
       especialidad: esEstudiante ? undefined : especialidad,
+      localidad: localidad || undefined,
+      provincia: provincia || undefined,
     });
   }
 
@@ -141,6 +148,36 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
             inputMode="numeric"
             placeholder="30"
             className={inputBase}
+          />
+        </div>
+
+        {/* Localidad */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-600 mb-1">
+            Localidad
+          </label>
+          <LocalidadInput
+            value={localidad}
+            provincia={provincia}
+            onChange={(loc, prov) => {
+              setLocalidad(loc);
+              setProvincia(prov);
+            }}
+            inputClassName={inputBase}
+          />
+        </div>
+
+        {/* Provincia (read-only, auto-completed) */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-600 mb-1">
+            Provincia
+          </label>
+          <input
+            type="text"
+            readOnly
+            value={provincia}
+            placeholder="Se completa automáticamente"
+            className={`${inputBase} bg-gray-50 cursor-not-allowed`}
           />
         </div>
 

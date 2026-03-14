@@ -16,6 +16,7 @@ type FeriaPhase = "register" | "playing";
 export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
   const [phase, setPhase] = useState<FeriaPhase>("register");
   const [registrationId, setRegistrationId] = useState<string | null>(null);
+  const [playerName, setPlayerName] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   async function handleRegistration(data: RegistrationData) {
@@ -29,6 +30,7 @@ export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
       if (res.ok) {
         const reg = await res.json();
         setRegistrationId(reg.id);
+        setPlayerName(data.nombre);
         setPhase("playing");
       }
     } finally {
@@ -65,6 +67,7 @@ export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
         questions={questions}
         winMessage={winMessage}
         registrationId={registrationId}
+        playerName={playerName}
       />
     </main>
   );
