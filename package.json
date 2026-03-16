@@ -7,9 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "npx tsx scripts/seed.ts"
+    "seed": "npx tsx scripts/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@prisma/adapter-libsql": "^6.5.0",
     "@prisma/client": "^6.5.0",
     "@upstash/redis": "^1.36.3",
     "jose": "^6.0.11",
