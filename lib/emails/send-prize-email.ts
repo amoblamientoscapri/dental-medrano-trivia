@@ -1,7 +1,11 @@
 import { Resend } from "resend";
 import type { Branch } from "@/lib/types";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResendClient() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) throw new Error("RESEND_API_KEY is not configured");
+  return new Resend(key);
+}
 
 interface SendPrizeEmailParams {
   to: string;
@@ -21,6 +25,7 @@ export async function sendPrizeEmail({ to, nombre, prizeCode, branches }: SendPr
     .join("");
 
   try {
+    const resend = getResendClient();
     await resend.emails.send({
       from: "Dental Medrano <trivia@dentalmedrano.com>",
       to,
