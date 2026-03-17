@@ -13,6 +13,7 @@ interface GameScreenProps {
   winMessage: string;
   registrationId?: string | null;
   playerName?: string;
+  campaignId?: string;
   prizeDeadline?: string;
   replayUrl?: string;
 }

@@ -9,11 +9,12 @@ import { Logo } from "./Logo";
 interface FeriaClientProps {
   questions: Question[];
   winMessage: string;
+  campaignId?: string;
 }
 
 type FeriaPhase = "register" | "playing";
 
-export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
+export function FeriaClient({ questions, winMessage, campaignId }: FeriaClientProps) {
   const [phase, setPhase] = useState<FeriaPhase>("register");
   const [registrationId, setRegistrationId] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>("");
@@ -25,7 +26,7 @@ export function FeriaClient({ questions, winMessage }: FeriaClientProps) {
       const res = await fetch("/api/registros", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, campaignId }),
       });
       if (res.ok) {
         const reg = await res.json();

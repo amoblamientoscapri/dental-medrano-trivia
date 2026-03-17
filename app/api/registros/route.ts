@@ -10,7 +10,7 @@ import { cookies } from "next/headers";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nombre, telefono, correo, edad, esEstudiante, especialidad, localidad, provincia } = body;
+    const { nombre, telefono, correo, edad, esEstudiante, especialidad, localidad, provincia, campaignId } = body;
 
     if (!nombre || !telefono || !correo || !edad) {
       return NextResponse.json(
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
       especialidad: esEstudiante ? undefined : especialidad?.trim() || undefined,
       localidad: localidad?.trim() || undefined,
       provincia: provincia?.trim() || undefined,
+      campaignId: campaignId || undefined,
     });
 
     return NextResponse.json(reg, { status: 201 });

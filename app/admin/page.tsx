@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { Question, GameConfig, Registration, Branch, CampaignConfig } from "@/lib/types";
+import type { Question, GameConfig, Registration, Branch } from "@/lib/types";
+import { CampaignTab } from "@/components/admin/CampaignTab";
 
-type Tab = "preguntas" | "registros" | "sucursales";
+type Tab = "preguntas" | "registros" | "sucursales" | "campana";
 
 export default function AdminDashboard() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -21,15 +22,6 @@ export default function AdminDashboard() {
     correctIndex: 0,
   });
   const [configOpen, setConfigOpen] = useState(false);
-  const [campaignOpen, setCampaignOpen] = useState(false);
-  const [campaign, setCampaign] = useState<CampaignConfig>({
-    name: "",
-    slug: "",
-    prizeDeadline: "",
-    active: false,
-  });
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("preguntas");
   const [registrations, setRegistrations] = useState<Registration[]>([]);
@@ -46,14 +38,12 @@ export default function AdminDashboard() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [qRes, cRes, campRes] = await Promise.all([
+      const [qRes, cRes] = await Promise.all([
         fetch("/api/questions"),
         fetch("/api/config"),
-        fetch("/api/campaign"),
       ]);
       if (qRes.ok) setQuestions(await qRes.json());
       if (cRes.ok) setConfig(await cRes.json());
-      if (campRes.ok) setCampaign(await campRes.json());
     } finally {
       setLoading(false);
     }
@@ -182,7 +172,7 @@ export default function AdminDashboard() {
     const headers = [
       "Nombre", "Teléfono", "Email", "Edad", "Estudiante", "Especialidad",
       "Localidad", "Provincia", "Resultado", "Premio", "Estado Premio",
-      "Sucursal Retiro", "Fecha Retiro", "Email Enviado", "Fecha"
+      "Sucursal Retiro", "Fecha Retiro", "Email Enviado", "Campaña", "Fecha"
     ];
     const rows = registrations.map((r) => [
       r.nombre,
@@ -199,6 +189,7 @@ export default function AdminDashboard() {
       r.prize?.branch?.name || "-",
       r.prize?.redeemedAt ? new Date(r.prize.redeemedAt).toLocaleString("es-AR") : "-",
       r.prize ? (r.prize.emailSent ? "Sí" : "No") : "-",
+      r.campaign?.name || "-",
       new Date(r.timestamp).toLocaleString("es-AR"),
     ]);
 
@@ -213,42 +204,6 @@ export default function AdminDashboard() {
     a.download = `registros-trivia-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }
-
-  async function handleSaveCampaign() {
-    const res = await fetch("/api/campaign", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(campaign),
-    });
-    if (res.ok) {
-      const saved = await res.json();
-      setCampaign(saved);
-      setQrDataUrl(null);
-      setQrUrl(null);
-    }
-  }
-
-  async function handleGenerateQr() {
-    const res = await fetch("/api/campaign/generate-url", { method: "POST" });
-    if (!res.ok) {
-      const err = await res.json();
-      alert(err.error || "Error al generar QR");
-      return;
-    }
-    const { url } = await res.json();
-    setQrUrl(url);
-    const QRCode = (await import("qrcode")).default;
-    const dataUrl = await QRCode.toDataURL(url, { width: 512, margin: 2 });
-    setQrDataUrl(dataUrl);
-  }
-
-  function handleDownloadQr() {
-    if (!qrDataUrl) return;
-    const link = document.createElement("a");
-    link.download = `qr-${campaign.slug}.png`;
-    link.href = qrDataUrl;
-    link.click();
   }
 
   function startEdit(q: Question) {
@@ -299,13 +254,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { setCampaignOpen(!campaignOpen); if (!campaignOpen) setConfigOpen(false); }}
-              className="text-sm text-gray-600 hover:text-orange-brand px-3 py-1.5 rounded-lg hover:bg-orange-50 transition-colors"
-            >
-              Campaña
-            </button>
-            <button
-              onClick={() => { setConfigOpen(!configOpen); if (!configOpen) setCampaignOpen(false); }}
+              onClick={() => setConfigOpen(!configOpen)}
               className="text-sm text-gray-600 hover:text-orange-brand px-3 py-1.5 rounded-lg hover:bg-orange-50 transition-colors"
             >
               Configuracion
@@ -417,102 +366,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Campaign panel */}
-        {campaignOpen && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">
-              Campaña con QR
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">
-                  Nombre de la campaña
-                </label>
-                <input
-                  type="text"
-                  value={campaign.name}
-                  onChange={(e) =>
-                    setCampaign({ ...campaign, name: e.target.value })
-                  }
-                  placeholder="Ej: Expo Dental Marzo 2026"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">
-                  Fecha límite
-                </label>
-                <input
-                  type="date"
-                  value={campaign.prizeDeadline}
-                  onChange={(e) =>
-                    setCampaign({ ...campaign, prizeDeadline: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
-              </div>
-            </div>
-            <div className="mt-3 flex items-center gap-3">
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={campaign.active}
-                  onChange={(e) =>
-                    setCampaign({ ...campaign, active: e.target.checked })
-                  }
-                  className="rounded"
-                />
-                Campaña activa
-              </label>
-              {campaign.slug && (
-                <span className="text-xs text-gray-400">
-                  slug: {campaign.slug}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2 mt-4">
-              <button
-                onClick={handleSaveCampaign}
-                disabled={!campaign.name || !campaign.prizeDeadline}
-                className="bg-orange-brand hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-              >
-                Guardar campaña
-              </button>
-              <button
-                onClick={handleGenerateQr}
-                disabled={!campaign.slug || !campaign.active}
-                className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-              >
-                Generar QR
-              </button>
-            </div>
-
-            {qrDataUrl && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <img
-                    src={qrDataUrl}
-                    alt="QR de campaña"
-                    className="w-48 h-48 rounded-lg border border-gray-200"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 mb-1">URL firmada:</p>
-                    <p className="text-xs text-gray-700 break-all bg-white p-2 rounded border border-gray-200 mb-3">
-                      {qrUrl}
-                    </p>
-                    <button
-                      onClick={handleDownloadQr}
-                      className="bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
-                    >
-                      Descargar QR
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
           <button
@@ -549,6 +402,16 @@ export default function AdminDashboard() {
             }`}
           >
             Sucursales
+          </button>
+          <button
+            onClick={() => setTab("campana")}
+            className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+              tab === "campana"
+                ? "bg-white text-orange-brand shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Campañas
           </button>
         </div>
 
@@ -833,6 +696,7 @@ export default function AdminDashboard() {
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Estado</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Sucursal</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Campaña</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Fecha</th>
                       </tr>
                     </thead>
@@ -911,6 +775,9 @@ export default function AdminDashboard() {
                             ) : (
                               <span className="text-gray-300">-</span>
                             )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">
+                            {r.campaign?.name || "-"}
                           </td>
                           <td className="px-4 py-3 text-gray-500 text-xs">
                             {new Date(r.timestamp).toLocaleString("es-AR", {
@@ -1054,6 +921,9 @@ export default function AdminDashboard() {
             )}
           </>
         )}
+
+        {/* ========== CAMPAÑAS TAB ========== */}
+        {tab === "campana" && <CampaignTab />}
       </div>
     </div>
   );

@@ -27,6 +27,16 @@ export interface GameState {
   showFeedback: boolean;
 }
 
+export interface Campaign {
+  id: string;
+  name: string;
+  slug: string;
+  flowType: "jugar" | "feria";
+  expiresAt: string;
+  active: boolean;
+  createdAt: string;
+}
+
 export interface Registration {
   id: string;
   nombre: string;
@@ -39,6 +49,8 @@ export interface Registration {
   provincia?: string;
   timestamp: string;
   gameResult?: "won" | "lost";
+  campaignId?: string;
+  campaign?: Campaign | null;
   prize?: Prize | null;
 }
 
