@@ -1,5 +1,5 @@
 import { Redis } from "@upstash/redis";
-import type { Question, GameConfig } from "./types";
+import type { Question, GameConfig, CampaignConfig } from "./types";
 
 const redis = new Redis({
   url: process.env.KV_REST_API_URL!,
@@ -8,6 +8,7 @@ const redis = new Redis({
 
 const QUESTIONS_KEY = "questions";
 const CONFIG_KEY = "game-config";
+const CAMPAIGN_KEY = "campaign-config";
 
 const DEFAULT_CONFIG: GameConfig = {
   questionsPerRound: 3,
@@ -31,6 +32,22 @@ export async function getConfig(): Promise<GameConfig> {
 
 export async function setConfig(config: GameConfig): Promise<void> {
   await redis.set(CONFIG_KEY, config);
+}
+
+const DEFAULT_CAMPAIGN: CampaignConfig = {
+  name: "",
+  slug: "",
+  prizeDeadline: "",
+  active: false,
+};
+
+export async function getCampaign(): Promise<CampaignConfig> {
+  const campaign = await redis.get<CampaignConfig>(CAMPAIGN_KEY);
+  return campaign || DEFAULT_CAMPAIGN;
+}
+
+export async function setCampaign(campaign: CampaignConfig): Promise<void> {
+  await redis.set(CAMPAIGN_KEY, campaign);
 }
 
 export async function getRandomQuestions(count: number): Promise<Question[]> {

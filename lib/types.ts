@@ -10,6 +10,13 @@ export interface GameConfig {
   winMessage: string;
 }
 
+export interface CampaignConfig {
+  name: string;
+  slug: string;
+  prizeDeadline: string;
+  active: boolean;
+}
+
 export type GamePhase = "idle" | "playing" | "won" | "lost";
 
 export interface GameState {
