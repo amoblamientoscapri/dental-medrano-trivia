@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Question, GameConfig, Registration, Branch } from "@/lib/types";
+import { CampaignTab } from "@/components/admin/CampaignTab";
 
-type Tab = "preguntas" | "registros" | "sucursales";
+type Tab = "preguntas" | "registros" | "sucursales" | "campana";
 
 export default function AdminDashboard() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -171,7 +172,7 @@ export default function AdminDashboard() {
     const headers = [
       "Nombre", "Teléfono", "Email", "Edad", "Estudiante", "Especialidad",
       "Localidad", "Provincia", "Resultado", "Premio", "Estado Premio",
-      "Sucursal Retiro", "Fecha Retiro", "Email Enviado", "Fecha"
+      "Sucursal Retiro", "Fecha Retiro", "Email Enviado", "Campaña", "Fecha"
     ];
     const rows = registrations.map((r) => [
       r.nombre,
@@ -188,6 +189,7 @@ export default function AdminDashboard() {
       r.prize?.branch?.name || "-",
       r.prize?.redeemedAt ? new Date(r.prize.redeemedAt).toLocaleString("es-AR") : "-",
       r.prize ? (r.prize.emailSent ? "Sí" : "No") : "-",
+      r.campaign?.name || "-",
       new Date(r.timestamp).toLocaleString("es-AR"),
     ]);
 
@@ -400,6 +402,16 @@ export default function AdminDashboard() {
             }`}
           >
             Sucursales
+          </button>
+          <button
+            onClick={() => setTab("campana")}
+            className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+              tab === "campana"
+                ? "bg-white text-orange-brand shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Campañas
           </button>
         </div>
 
@@ -684,6 +696,7 @@ export default function AdminDashboard() {
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Estado</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Sucursal</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Campaña</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Fecha</th>
                       </tr>
                     </thead>
@@ -762,6 +775,9 @@ export default function AdminDashboard() {
                             ) : (
                               <span className="text-gray-300">-</span>
                             )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">
+                            {r.campaign?.name || "-"}
                           </td>
                           <td className="px-4 py-3 text-gray-500 text-xs">
                             {new Date(r.timestamp).toLocaleString("es-AR", {
@@ -905,6 +921,9 @@ export default function AdminDashboard() {
             )}
           </>
         )}
+
+        {/* ========== CAMPAÑAS TAB ========== */}
+        {tab === "campana" && <CampaignTab />}
       </div>
     </div>
   );

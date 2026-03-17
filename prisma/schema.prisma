@@ -7,8 +7,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Campaign {
+  id            String         @id @default(cuid())
+  name          String
+  slug          String         @unique
+  flowType      String         @default("feria")
+  expiresAt     DateTime
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  registrations Registration[]
+}
+
 model Registration {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   nombre        String
   telefono      String
   correo        String
@@ -18,7 +29,9 @@ model Registration {
   localidad     String?
   provincia     String?
   gameResult    String?
-  timestamp     DateTime @default(now())
+  timestamp     DateTime  @default(now())
+  campaignId    String?
+  campaign      Campaign? @relation(fields: [campaignId], references: [id])
   prize         Prize?
 }
 

@@ -14,6 +14,7 @@ export async function saveRegistration(
       especialidad: reg.especialidad || null,
       localidad: reg.localidad || null,
       provincia: reg.provincia || null,
+      campaignId: reg.campaignId || null,
     },
   });
 
@@ -49,7 +50,7 @@ export async function updateRegistrationResult(
 
 export async function getAllRegistrations(): Promise<Registration[]> {
   const rows = await prisma.registration.findMany({
-    include: { prize: { include: { branch: true } } },
+    include: { prize: { include: { branch: true } }, campaign: true },
     orderBy: { timestamp: "desc" },
   });
 
@@ -65,6 +66,18 @@ export async function getAllRegistrations(): Promise<Registration[]> {
     provincia: r.provincia || undefined,
     timestamp: r.timestamp.toISOString(),
     gameResult: (r.gameResult as "won" | "lost") || undefined,
+    campaignId: r.campaignId || undefined,
+    campaign: r.campaign
+      ? {
+          id: r.campaign.id,
+          name: r.campaign.name,
+          slug: r.campaign.slug,
+          flowType: r.campaign.flowType as "jugar" | "feria",
+          expiresAt: r.campaign.expiresAt.toISOString(),
+          active: r.campaign.active,
+          createdAt: r.campaign.createdAt.toISOString(),
+        }
+      : null,
     prize: r.prize
       ? {
           id: r.prize.id,
