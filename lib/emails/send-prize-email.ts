@@ -177,6 +177,26 @@ export async function sendPrizeEmail({
     const apiKey = getEmblueApiKey();
     const eventName = process.env.EMBLUE_EVENT_NAME || "premio_trivia";
 
+    const requestBody = {
+      email: to,
+      eventName,
+      attributes: {
+        nombre: firstName,
+        nombre_completo: nombre,
+        codigo_premio: prizeCode,
+        qr_url: qrUrl,
+        premio_url: prizeUrl,
+        sucursales: activeBranches
+          .map((b) => `${b.name} - ${b.address}`)
+          .join(" | "),
+        html_content: htmlContent,
+      },
+    };
+
+    console.log("emBlue request URL:", "https://track.embluemail.com/contacts/event");
+    console.log("emBlue request body (sin html_content):", JSON.stringify({ ...requestBody, attributes: { ...requestBody.attributes, html_content: "[HTML OMITTED]" } }));
+    console.log("emBlue API key (primeros 10 chars):", apiKey.substring(0, 10) + "...");
+
     const response = await fetch(
       "https://track.embluemail.com/contacts/event",
       {
@@ -185,27 +205,17 @@ export async function sendPrizeEmail({
           "Content-Type": "application/json",
           Authorization: `Basic ${apiKey}`,
         },
-        body: JSON.stringify({
-          email: to,
-          eventName,
-          attributes: {
-            nombre: firstName,
-            nombre_completo: nombre,
-            codigo_premio: prizeCode,
-            qr_url: qrUrl,
-            premio_url: prizeUrl,
-            sucursales: activeBranches
-              .map((b) => `${b.name} - ${b.address}`)
-              .join(" | "),
-            html_content: htmlContent,
-          },
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
 
+    const responseText = await response.text();
+    console.log("emBlue response status:", response.status);
+    console.log("emBlue response headers:", JSON.stringify(Object.fromEntries(response.headers.entries())));
+    console.log("emBlue response body:", responseText);
+
     if (!response.ok) {
-      const text = await response.text();
-      console.error("emBlue API error:", response.status, text);
+      console.error("emBlue API error:", response.status, responseText);
       return false;
     }
 
