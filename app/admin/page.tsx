@@ -30,6 +30,9 @@ export default function AdminDashboard() {
   const [newBranch, setNewBranch] = useState({ name: "", address: "" });
   const [editingBranchId, setEditingBranchId] = useState<string | null>(null);
   const [editBranchData, setEditBranchData] = useState({ name: "", address: "" });
+  const [testEmail, setTestEmail] = useState("");
+  const [testEmailStatus, setTestEmailStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
+  const [testEmailResult, setTestEmailResult] = useState("");
   const router = useRouter();
 
   const fetchData = useCallback(async () => {
@@ -310,6 +313,54 @@ export default function AdminDashboard() {
             >
               Guardar configuracion
             </button>
+
+            {/* Test Email */}
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-3">Test Email (emBlue)</h3>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="Email para test..."
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+                <button
+                  onClick={async () => {
+                    if (!testEmail) return;
+                    setTestEmailStatus("sending");
+                    setTestEmailResult("");
+                    try {
+                      const res = await fetch("/api/test-email", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: testEmail, nombre: "Test User" }),
+                      });
+                      const data = await res.json();
+                      if (data.ok) {
+                        setTestEmailStatus("ok");
+                        setTestEmailResult("Email enviado. Revisá la bandeja de entrada y los logs de Vercel.");
+                      } else {
+                        setTestEmailStatus("error");
+                        setTestEmailResult(data.error || "Error al enviar. Revisá los logs de Vercel.");
+                      }
+                    } catch {
+                      setTestEmailStatus("error");
+                      setTestEmailResult("Error de conexión");
+                    }
+                  }}
+                  disabled={!testEmail || testEmailStatus === "sending"}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                >
+                  {testEmailStatus === "sending" ? "Enviando..." : "Enviar test"}
+                </button>
+              </div>
+              {testEmailResult && (
+                <p className={`mt-2 text-sm ${testEmailStatus === "ok" ? "text-green-600" : "text-red-600"}`}>
+                  {testEmailResult}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
