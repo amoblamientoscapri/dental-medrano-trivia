@@ -14,6 +14,8 @@ interface GameScreenProps {
   registrationId?: string | null;
   playerName?: string;
   campaignId?: string;
+  prizeDeadline?: string;
+  replayUrl?: string;
 }
 
 interface PrizeData {
@@ -21,7 +23,7 @@ interface PrizeData {
   branches: Branch[];
 }
 
-export function GameScreen({ questions, winMessage, registrationId, playerName }: GameScreenProps) {
+export function GameScreen({ questions, winMessage, registrationId, playerName, prizeDeadline, replayUrl }: GameScreenProps) {
   const [phase, setPhase] = useState<GamePhase>(registrationId ? "playing" : "idle");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -101,8 +103,8 @@ export function GameScreen({ questions, winMessage, registrationId, playerName }
   );
 
   const handlePlayAgain = useCallback(() => {
-    window.location.href = registrationId ? "/feria" : "/jugar";
-  }, [registrationId]);
+    window.location.href = replayUrl || (registrationId ? "/feria" : "/jugar");
+  }, [registrationId, replayUrl]);
 
   if (phase === "idle") {
     return (
@@ -149,6 +151,7 @@ export function GameScreen({ questions, winMessage, registrationId, playerName }
           playerName={playerName}
           prizeCode={prizeData?.code}
           branches={prizeData?.branches}
+          prizeDeadline={prizeDeadline}
         />
       </div>
     );
