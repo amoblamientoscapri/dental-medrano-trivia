@@ -95,16 +95,13 @@ export function ResultScreen({
                   level="M"
                 />
               </div>
-              <p className="text-xs text-gray-500">
-                Se envió el código a tu email
-              </p>
             </div>
 
             {/* Branches */}
             {branches && branches.length > 0 && (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-3 mb-2">
                 <p className="text-sm font-bold text-green-800 mb-1">
-                  Retirá tu premio en:
+                  El premio se retira únicamente con el QR en:
                 </p>
                 <ul className="text-sm text-green-700 space-y-1">
                   {branches.filter(b => b.active).map((b) => (

@@ -70,11 +70,16 @@ export function GameScreen({ questions, winMessage, registrationId, playerName }
 
       if (isCorrect) {
         playCorrect();
-        setTimeout(() => {
+        setTimeout(async () => {
           if (currentIndex + 1 >= questions.length) {
             playWin();
+            if (registrationId) {
+              await reportResult("won");
+            }
             setPhase("won");
-            reportResult("won");
+            if (!registrationId) {
+              reportResult("won");
+            }
           } else {
             setCurrentIndex((prev) => prev + 1);
             setSelectedOption(null);
@@ -91,7 +96,7 @@ export function GameScreen({ questions, winMessage, registrationId, playerName }
         }, 2200);
       }
     },
-    [currentIndex, questions, showFeedback, reportResult]
+    [currentIndex, questions, showFeedback, reportResult, registrationId]
   );
 
   const handlePlayAgain = useCallback(() => {
