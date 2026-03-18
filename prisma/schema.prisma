@@ -8,14 +8,15 @@ generator client {
 }
 
 model Campaign {
-  id            String         @id @default(cuid())
-  name          String
-  slug          String         @unique
-  flowType      String         @default("feria")
-  expiresAt     DateTime
-  active        Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  registrations Registration[]
+  id             String         @id @default(cuid())
+  name           String
+  slug           String         @unique
+  flowType       String         @default("feria")
+  expiresAt      DateTime
+  active         Boolean        @default(true)
+  optionalFields String         @default("[]")
+  createdAt      DateTime       @default(now())
+  registrations  Registration[]
 }
 
 model Registration {
@@ -23,7 +24,7 @@ model Registration {
   nombre        String
   telefono      String
   correo        String
-  edad          Int
+  edad          Int?
   esEstudiante  Boolean
   especialidad  String?
   localidad     String?

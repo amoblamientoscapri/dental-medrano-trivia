@@ -12,9 +12,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { nombre, telefono, correo, edad, esEstudiante, especialidad, localidad, provincia, campaignId } = body;
 
-    if (!nombre || !telefono || !correo || !edad) {
+    if (!nombre || !telefono || !correo) {
       return NextResponse.json(
-        { error: "Campos requeridos: nombre, telefono, correo, edad" },
+        { error: "Campos requeridos: nombre, telefono, correo" },
         { status: 400 }
       );
     }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       nombre: nombre.trim(),
       telefono: telefono.trim(),
       correo: correo.trim(),
-      edad: Number(edad),
+      edad: edad ? Number(edad) : undefined,
       esEstudiante: Boolean(esEstudiante),
       especialidad: esEstudiante ? undefined : especialidad?.trim() || undefined,
       localidad: localidad?.trim() || undefined,

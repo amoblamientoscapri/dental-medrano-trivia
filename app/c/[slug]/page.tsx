@@ -71,6 +71,7 @@ export default async function CampaignPage({
       winMessage={config.winMessage}
       campaignId={campaign.id}
       prizeDeadline={prizeDeadline}
+      optionalFields={campaign.optionalFields}
     />
   );
 }

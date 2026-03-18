@@ -178,7 +178,7 @@ export default function AdminDashboard() {
       r.nombre,
       r.telefono,
       r.correo,
-      String(r.edad),
+      r.edad != null ? String(r.edad) : "-",
       r.esEstudiante ? "Sí" : "No",
       r.especialidad || "-",
       r.localidad || "-",
@@ -707,7 +707,7 @@ export default function AdminDashboard() {
                           <td className="px-4 py-3 font-medium text-gray-900">{r.nombre}</td>
                           <td className="px-4 py-3 text-gray-600">{r.telefono}</td>
                           <td className="px-4 py-3 text-gray-600">{r.correo}</td>
-                          <td className="px-4 py-3 text-gray-600">{r.edad}</td>
+                          <td className="px-4 py-3 text-gray-600">{r.edad ?? "-"}</td>
                           <td className="px-4 py-3">
                             <span className={`inline-block text-xs px-2 py-0.5 rounded-full ${
                               r.esEstudiante

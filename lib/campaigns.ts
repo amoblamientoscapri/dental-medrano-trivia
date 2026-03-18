@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import type { Campaign } from "./types";
+import type { Campaign, OptionalField } from "./types";
 
 // --- CRUD ---
 
@@ -8,6 +8,7 @@ export async function createCampaign(data: {
   slug: string;
   flowType: "jugar" | "feria";
   expiresAt: Date;
+  optionalFields?: OptionalField[];
 }): Promise<Campaign> {
   const created = await prisma.campaign.create({
     data: {
@@ -15,6 +16,7 @@ export async function createCampaign(data: {
       slug: data.slug,
       flowType: data.flowType,
       expiresAt: data.expiresAt,
+      optionalFields: JSON.stringify(data.optionalFields ?? []),
     },
   });
   return toCampaign(created);
@@ -22,11 +24,15 @@ export async function createCampaign(data: {
 
 export async function updateCampaign(
   id: string,
-  data: Partial<{ name: string; slug: string; flowType: string; expiresAt: Date; active: boolean }>
+  data: Partial<{ name: string; slug: string; flowType: string; expiresAt: Date; active: boolean; optionalFields: OptionalField[] }>
 ): Promise<Campaign> {
+  const prismaData: Record<string, unknown> = { ...data };
+  if (data.optionalFields !== undefined) {
+    prismaData.optionalFields = JSON.stringify(data.optionalFields);
+  }
   const updated = await prisma.campaign.update({
     where: { id },
-    data,
+    data: prismaData,
   });
   return toCampaign(updated);
 }
@@ -71,7 +77,11 @@ export async function deleteCampaign(id: string): Promise<Campaign> {
   return toCampaign(updated);
 }
 
-function toCampaign(row: { id: string; name: string; slug: string; flowType: string; expiresAt: Date; active: boolean; createdAt: Date }): Campaign {
+function toCampaign(row: { id: string; name: string; slug: string; flowType: string; expiresAt: Date; active: boolean; optionalFields: string; createdAt: Date }): Campaign {
+  let optionalFields: OptionalField[] = [];
+  try {
+    optionalFields = JSON.parse(row.optionalFields);
+  } catch { /* default empty */ }
   return {
     id: row.id,
     name: row.name,
@@ -79,6 +89,7 @@ function toCampaign(row: { id: string; name: string; slug: string; flowType: str
     flowType: row.flowType as "jugar" | "feria",
     expiresAt: row.expiresAt.toISOString(),
     active: row.active,
+    optionalFields,
     createdAt: row.createdAt.toISOString(),
   };
 }
