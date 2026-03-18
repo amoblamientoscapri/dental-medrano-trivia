@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import type { Campaign } from "@/lib/types";
+import type { Campaign, OptionalField } from "@/lib/types";
 
 interface CampaignWithCount extends Campaign {
   _count: { registrations: number };
@@ -27,6 +27,7 @@ export function CampaignTab() {
     slug: "",
     flowType: "feria" as "jugar" | "feria",
     expiresAt: "",
+    optionalFields: [] as OptionalField[],
   });
   const [autoSlug, setAutoSlug] = useState(true);
   const [qrData, setQrData] = useState<{ url: string; campaignName: string } | null>(null);
@@ -49,7 +50,7 @@ export function CampaignTab() {
 
   function resetForm() {
     setEditingId(null);
-    setFormData({ name: "", slug: "", flowType: "feria", expiresAt: "" });
+    setFormData({ name: "", slug: "", flowType: "feria", expiresAt: "", optionalFields: [] });
     setAutoSlug(true);
     setShowForm(false);
   }
@@ -66,6 +67,7 @@ export function CampaignTab() {
         slug: formData.slug,
         flowType: formData.flowType,
         expiresAt: formData.expiresAt,
+        optionalFields: formData.optionalFields,
       }),
     });
 
@@ -135,6 +137,7 @@ export function CampaignTab() {
       slug: c.slug,
       flowType: c.flowType,
       expiresAt: c.expiresAt.split("T")[0],
+      optionalFields: c.optionalFields || [],
     });
     setAutoSlug(false);
     setShowForm(true);
@@ -257,6 +260,35 @@ export function CampaignTab() {
               />
             </div>
           </div>
+
+          {/* Campos opcionales del formulario */}
+          <div className="mt-3">
+            <label className="block text-sm text-gray-600 mb-2">Campos opcionales del formulario</label>
+            <div className="flex flex-wrap gap-4">
+              {([
+                { key: "edad" as OptionalField, label: "Edad" },
+                { key: "localidad" as OptionalField, label: "Localidad" },
+                { key: "provincia" as OptionalField, label: "Provincia" },
+              ]).map(({ key, label }) => (
+                <label key={key} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.optionalFields.includes(key)}
+                    onChange={(e) => {
+                      const fields = e.target.checked
+                        ? [...formData.optionalFields, key]
+                        : formData.optionalFields.filter((f) => f !== key);
+                      setFormData({ ...formData, optionalFields: fields });
+                    }}
+                    className="w-4 h-4 rounded border-gray-300 text-orange-brand focus:ring-orange-brand"
+                  />
+                  <span className="text-sm text-gray-700">{label}</span>
+                </label>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Solo se mostrarán en el formulario los campos marcados</p>
+          </div>
+
           <div className="flex gap-2 mt-4">
             <button
               onClick={handleSave}

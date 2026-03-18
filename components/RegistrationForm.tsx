@@ -2,24 +2,29 @@
 
 import { useState, useRef, type FormEvent } from "react";
 import { LocalidadInput } from "./LocalidadInput";
+import type { OptionalField } from "@/lib/types";
 
 interface RegistrationFormProps {
   onSubmit: (data: RegistrationData) => void;
   loading: boolean;
+  optionalFields?: OptionalField[];
 }
 
 export interface RegistrationData {
   nombre: string;
   telefono: string;
   correo: string;
-  edad: number;
+  edad?: number;
   esEstudiante: boolean;
   especialidad?: string;
   localidad?: string;
   provincia?: string;
 }
 
-export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
+export function RegistrationForm({ onSubmit, loading, optionalFields = [] }: RegistrationFormProps) {
+  const showEdad = optionalFields.includes("edad");
+  const showLocalidad = optionalFields.includes("localidad");
+  const showProvincia = optionalFields.includes("provincia");
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [correo, setCorreo] = useState("");
@@ -37,18 +42,19 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!nombre || !telefono || !correo || !edad) return;
+    if (!nombre || !telefono || !correo) return;
+    if (showEdad && !edad) return;
     if (!esEstudiante && !especialidad) return;
 
     onSubmit({
       nombre,
       telefono,
       correo,
-      edad: Number(edad),
+      edad: showEdad && edad ? Number(edad) : undefined,
       esEstudiante,
       especialidad: esEstudiante ? undefined : especialidad,
-      localidad: localidad || undefined,
-      provincia: provincia || undefined,
+      localidad: showLocalidad && localidad ? localidad : undefined,
+      provincia: (showLocalidad || showProvincia) && provincia ? provincia : undefined,
     });
   }
 
@@ -122,64 +128,70 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
         </div>
 
         {/* Edad */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-1">
-            Edad
-          </label>
-          <input
-            ref={edadRef}
-            type="number"
-            required
-            min={1}
-            max={120}
-            value={edad}
-            onChange={(e) => setEdad(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (!esEstudiante && especialidadRef.current) {
-                  focusNext(especialidadRef);
-                } else {
-                  focusNext(submitRef);
+        {showEdad && (
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">
+              Edad
+            </label>
+            <input
+              ref={edadRef}
+              type="number"
+              required
+              min={1}
+              max={120}
+              value={edad}
+              onChange={(e) => setEdad(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (!esEstudiante && especialidadRef.current) {
+                    focusNext(especialidadRef);
+                  } else {
+                    focusNext(submitRef);
+                  }
                 }
-              }
-            }}
-            enterKeyHint={esEstudiante ? "go" : "next"}
-            inputMode="numeric"
-            placeholder="30"
-            className={inputBase}
-          />
-        </div>
+              }}
+              enterKeyHint={esEstudiante ? "go" : "next"}
+              inputMode="numeric"
+              placeholder="30"
+              className={inputBase}
+            />
+          </div>
+        )}
 
         {/* Localidad */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-1">
-            Localidad
-          </label>
-          <LocalidadInput
-            value={localidad}
-            provincia={provincia}
-            onChange={(loc, prov) => {
-              setLocalidad(loc);
-              setProvincia(prov);
-            }}
-            inputClassName={inputBase}
-          />
-        </div>
+        {showLocalidad && (
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">
+              Localidad
+            </label>
+            <LocalidadInput
+              value={localidad}
+              provincia={provincia}
+              onChange={(loc, prov) => {
+                setLocalidad(loc);
+                setProvincia(prov);
+              }}
+              inputClassName={inputBase}
+            />
+          </div>
+        )}
 
         {/* Provincia (read-only, auto-completed) */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-1">
-            Provincia
-          </label>
-          <input
-            type="text"
-            readOnly
-            value={provincia}
-            placeholder="Se completa automáticamente"
-            className={`${inputBase} bg-gray-50 cursor-not-allowed`}
-          />
-        </div>
+        {(showLocalidad || showProvincia) && (
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">
+              Provincia
+            </label>
+            <input
+              type="text"
+              readOnly
+              value={provincia}
+              placeholder="Se completa automáticamente"
+              className={`${inputBase} bg-gray-50 cursor-not-allowed`}
+            />
+          </div>
+        )}
 
         {/* Toggle Estudiante */}
         <div className="flex items-center gap-3 sm:col-span-2">
@@ -238,7 +250,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
       <button
         ref={submitRef}
         type="submit"
-        disabled={loading || !nombre || !telefono || !correo || !edad || (!esEstudiante && !especialidad)}
+        disabled={loading || !nombre || !telefono || !correo || (showEdad && !edad) || (!esEstudiante && !especialidad)}
         className="mt-5 w-full bg-orange-brand hover:bg-orange-dark text-white font-extrabold text-2xl py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
       >
         {loading ? (

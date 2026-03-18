@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Question } from "@/lib/types";
+import type { Question, OptionalField } from "@/lib/types";
 import { RegistrationForm, type RegistrationData } from "./RegistrationForm";
 import { GameScreen } from "./game/GameScreen";
 import { Logo } from "./Logo";
@@ -11,11 +11,12 @@ interface FeriaClientProps {
   winMessage: string;
   campaignId?: string;
   prizeDeadline?: string;
+  optionalFields?: OptionalField[];
 }
 
 type FeriaPhase = "register" | "playing";
 
-export function FeriaClient({ questions, winMessage, campaignId, prizeDeadline }: FeriaClientProps) {
+export function FeriaClient({ questions, winMessage, campaignId, prizeDeadline, optionalFields = [] }: FeriaClientProps) {
   const [phase, setPhase] = useState<FeriaPhase>("register");
   const [registrationId, setRegistrationId] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>("");
@@ -55,7 +56,7 @@ export function FeriaClient({ questions, winMessage, campaignId, prizeDeadline }
               </span>
             </div>
 
-            <RegistrationForm onSubmit={handleRegistration} loading={loading} />
+            <RegistrationForm onSubmit={handleRegistration} loading={loading} optionalFields={optionalFields} />
           </div>
 
         </div>

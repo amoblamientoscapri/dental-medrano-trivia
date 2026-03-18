@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, slug, flowType, expiresAt } = body;
+    const { name, slug, flowType, expiresAt, optionalFields } = body;
 
     if (!name || !slug || !expiresAt) {
       return NextResponse.json(
@@ -39,6 +39,7 @@ export async function POST(request: Request) {
       slug: slug.trim().toLowerCase(),
       flowType: flowType || "feria",
       expiresAt: new Date(expiresAt),
+      optionalFields: optionalFields || [],
     });
 
     const signedUrl = await generateSignedUrl(campaign);

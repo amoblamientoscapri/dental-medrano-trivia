@@ -27,6 +27,8 @@ export interface GameState {
   showFeedback: boolean;
 }
 
+export type OptionalField = "edad" | "localidad" | "provincia";
+
 export interface Campaign {
   id: string;
   name: string;
@@ -34,6 +36,7 @@ export interface Campaign {
   flowType: "jugar" | "feria";
   expiresAt: string;
   active: boolean;
+  optionalFields: OptionalField[];
   createdAt: string;
 }
 
@@ -42,7 +45,7 @@ export interface Registration {
   nombre: string;
   telefono: string;
   correo: string;
-  edad: number;
+  edad?: number;
   esEstudiante: boolean;
   especialidad?: string;
   localidad?: string;

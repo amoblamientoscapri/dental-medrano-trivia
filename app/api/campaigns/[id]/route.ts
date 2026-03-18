@@ -28,6 +28,7 @@ export async function PATCH(
     if (body.flowType !== undefined) data.flowType = body.flowType;
     if (body.expiresAt !== undefined) data.expiresAt = new Date(body.expiresAt);
     if (body.active !== undefined) data.active = body.active;
+    if (body.optionalFields !== undefined) data.optionalFields = body.optionalFields;
 
     const campaign = await updateCampaign(id, data);
     return NextResponse.json(campaign);
