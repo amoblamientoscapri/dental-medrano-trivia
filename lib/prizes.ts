@@ -30,7 +30,7 @@ export async function getPrizeByCode(code: string) {
   return prisma.prize.findUnique({
     where: { code },
     include: {
-      registration: true,
+      registration: { include: { campaign: true } },
       branch: true,
     },
   });

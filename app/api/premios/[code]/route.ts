@@ -20,6 +20,7 @@ export async function GET(
     branch: prize.branch
       ? { name: prize.branch.name, address: prize.branch.address }
       : null,
+    campaignExpiresAt: prize.registration.campaign?.expiresAt?.toISOString() || null,
   });
 }
 
@@ -32,6 +33,20 @@ export async function PATCH(
 
   if (!branchId) {
     return NextResponse.json({ error: "branchId es requerido" }, { status: 400 });
+  }
+
+  // Check campaign expiration before allowing redemption
+  const prize = await getPrizeByCode(code);
+  if (!prize) {
+    return NextResponse.json({ error: "Código inválido" }, { status: 404 });
+  }
+
+  const campaign = prize.registration.campaign;
+  if (campaign && new Date(campaign.expiresAt) < new Date()) {
+    return NextResponse.json(
+      { error: "El plazo para retirar este premio ha vencido" },
+      { status: 410 }
+    );
   }
 
   const redeemed = await redeemPrize(code, branchId);

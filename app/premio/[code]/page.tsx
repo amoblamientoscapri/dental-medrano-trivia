@@ -9,6 +9,7 @@ interface PrizeInfo {
   ganador: string;
   redeemedAt: string | null;
   branch: { name: string; address: string } | null;
+  campaignExpiresAt: string | null;
 }
 
 export default function PremioPage({ params }: { params: Promise<{ code: string }> }) {
@@ -99,6 +100,37 @@ export default function PremioPage({ params }: { params: Promise<{ code: string 
   }
 
   if (!prize) return null;
+
+  // Campaign expired and prize still pending → blocked
+  const campaignExpired = prize.campaignExpiresAt
+    && prize.status === "pending"
+    && new Date(prize.campaignExpiresAt) < new Date();
+
+  if (campaignExpired) {
+    return (
+      <main className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-red-50 via-white to-red-50 px-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-red-700 mb-2">Plazo vencido</h1>
+          <p className="text-gray-600 mb-1">
+            El plazo para retirar este premio ha vencido.
+          </p>
+          <p className="text-sm text-gray-400">
+            Venció el{" "}
+            {new Date(prize.campaignExpiresAt!).toLocaleDateString("es-AR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   // Already redeemed (loaded as redeemed)
   if (prize.status === "redeemed" && !redeemed) {

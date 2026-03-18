@@ -50,6 +50,8 @@ export default async function CampaignPage({
     );
   }
 
+  const prizeDeadline = campaign.expiresAt.split("T")[0];
+
   if (campaign.flowType === "jugar") {
     return (
       <main className="h-dvh flex flex-col bg-gradient-to-b from-orange-50 via-white to-orange-50 px-6 py-2 overflow-hidden max-w-3xl mx-auto">
@@ -57,6 +59,7 @@ export default async function CampaignPage({
           questions={questions}
           winMessage={config.winMessage}
           campaignId={campaign.id}
+          prizeDeadline={prizeDeadline}
         />
       </main>
     );
@@ -67,6 +70,7 @@ export default async function CampaignPage({
       questions={questions}
       winMessage={config.winMessage}
       campaignId={campaign.id}
+      prizeDeadline={prizeDeadline}
     />
   );
 }

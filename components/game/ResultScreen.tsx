@@ -129,9 +129,12 @@ export function ResultScreen({
         )}
 
         {prizeDeadline && (
-          <div className="mb-2 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-            <p className="text-orange-brand font-bold text-sm">
-              Retira tu premio antes del{" "}
+          <div className="mb-2 animate-slide-up bg-red-600 rounded-2xl p-3 flex items-center gap-3" style={{ animationDelay: "0.2s" }}>
+            <svg className="w-8 h-8 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-white font-extrabold text-lg leading-tight">
+              Retirá tu premio antes del{" "}
               {new Date(prizeDeadline + "T12:00:00").toLocaleDateString("es-AR", {
                 day: "2-digit",
                 month: "2-digit",

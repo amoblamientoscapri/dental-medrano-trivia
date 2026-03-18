@@ -10,11 +10,12 @@ interface FeriaClientProps {
   questions: Question[];
   winMessage: string;
   campaignId?: string;
+  prizeDeadline?: string;
 }
 
 type FeriaPhase = "register" | "playing";
 
-export function FeriaClient({ questions, winMessage, campaignId }: FeriaClientProps) {
+export function FeriaClient({ questions, winMessage, campaignId, prizeDeadline }: FeriaClientProps) {
   const [phase, setPhase] = useState<FeriaPhase>("register");
   const [registrationId, setRegistrationId] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>("");
@@ -69,6 +70,7 @@ export function FeriaClient({ questions, winMessage, campaignId }: FeriaClientPr
         winMessage={winMessage}
         registrationId={registrationId}
         playerName={playerName}
+        prizeDeadline={prizeDeadline}
       />
     </main>
   );
