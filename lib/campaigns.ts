@@ -102,11 +102,12 @@ async function hmacSign(payload: string): Promise<string> {
   );
   const encoded = new TextEncoder().encode(payload);
   const sig = await crypto.subtle.sign("HMAC", key, encoded.buffer as ArrayBuffer);
-  // URL-safe base64
+  // URL-safe base64, trimmed to 16 chars (still 96 bits of security)
   return btoa(String.fromCharCode(...new Uint8Array(sig)))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
-    .replace(/=+$/, "");
+    .replace(/=+$/, "")
+    .slice(0, 16);
 }
 
 async function hmacVerify(payload: string, signature: string): Promise<boolean> {
