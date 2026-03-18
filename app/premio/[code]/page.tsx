@@ -102,9 +102,12 @@ export default function PremioPage({ params }: { params: Promise<{ code: string 
   if (!prize) return null;
 
   // Campaign expired and prize still pending → blocked
-  const campaignExpired = prize.campaignExpiresAt
-    && prize.status === "pending"
-    && new Date(prize.campaignExpiresAt) < new Date();
+  let campaignExpired = false;
+  if (prize.campaignExpiresAt && prize.status === "pending") {
+    const deadline = new Date(prize.campaignExpiresAt);
+    deadline.setUTCDate(deadline.getUTCDate() + 1);
+    campaignExpired = deadline <= new Date();
+  }
 
   if (campaignExpired) {
     return (
@@ -125,6 +128,7 @@ export default function PremioPage({ params }: { params: Promise<{ code: string 
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
+              timeZone: "UTC",
             })}
           </p>
         </div>

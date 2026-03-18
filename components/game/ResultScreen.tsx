@@ -135,10 +135,11 @@ export function ResultScreen({
             </svg>
             <p className="text-white font-extrabold text-lg leading-tight">
               Retirá tu premio antes del{" "}
-              {new Date(prizeDeadline + "T12:00:00").toLocaleDateString("es-AR", {
+              {new Date(prizeDeadline + "T00:00:00Z").toLocaleDateString("es-AR", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
+                timeZone: "UTC",
               })}
             </p>
           </div>

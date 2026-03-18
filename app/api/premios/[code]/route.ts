@@ -42,11 +42,15 @@ export async function PATCH(
   }
 
   const campaign = prize.registration.campaign;
-  if (campaign && new Date(campaign.expiresAt) < new Date()) {
-    return NextResponse.json(
-      { error: "El plazo para retirar este premio ha vencido" },
-      { status: 410 }
-    );
+  if (campaign) {
+    const deadline = new Date(campaign.expiresAt);
+    deadline.setUTCDate(deadline.getUTCDate() + 1);
+    if (deadline <= new Date()) {
+      return NextResponse.json(
+        { error: "El plazo para retirar este premio ha vencido" },
+        { status: 410 }
+      );
+    }
   }
 
   const redeemed = await redeemPrize(code, branchId);
