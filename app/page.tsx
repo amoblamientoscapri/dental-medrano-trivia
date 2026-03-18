@@ -54,7 +54,7 @@ export default async function HomePage() {
                   <p className="text-xs text-gray-400">
                     {c.flowType === "feria" ? "Con registro" : "Directo al juego"}
                     {" · "}
-                    Hasta {new Date(c.expiresAt).toLocaleDateString("es-AR")}
+                    Hasta {new Date(c.expiresAt).toLocaleDateString("es-AR", { timeZone: "UTC" })}
                   </p>
                 </div>
                 <svg className="w-5 h-5 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

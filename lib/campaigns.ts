@@ -56,7 +56,7 @@ export async function getActiveCampaigns(): Promise<Campaign[]> {
   const rows = await prisma.campaign.findMany({
     where: {
       active: true,
-      expiresAt: { gte: new Date() },
+      expiresAt: { gte: new Date(new Date().toISOString().split("T")[0] + "T00:00:00Z") },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -136,7 +136,7 @@ export async function validateCampaignUrl(
   }
 
   // Check expiration
-  const expirationDate = new Date(vto + "T23:59:59");
+  const expirationDate = new Date(vto + "T23:59:59Z");
   if (isNaN(expirationDate.getTime()) || expirationDate < new Date()) {
     return { valid: false, error: "Este enlace ha expirado" };
   }

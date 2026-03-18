@@ -283,7 +283,9 @@ export function CampaignTab() {
       ) : (
         <div className="space-y-2">
           {campaigns.map((c) => {
-            const isExpired = new Date(c.expiresAt) < new Date();
+            const expDeadline = new Date(c.expiresAt);
+            expDeadline.setUTCDate(expDeadline.getUTCDate() + 1);
+            const isExpired = expDeadline <= new Date();
             return (
               <div key={c.id} className="bg-white rounded-xl border border-gray-200 p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -313,7 +315,7 @@ export function CampaignTab() {
                       <p className="text-xs text-gray-500">
                         <span className="font-mono">/c/{c.slug}</span>
                         {" · "}
-                        Vence: {new Date(c.expiresAt).toLocaleDateString("es-AR")}
+                        Vence: {new Date(c.expiresAt).toLocaleDateString("es-AR", { timeZone: "UTC" })}
                         {" · "}
                         {c._count.registrations} registros
                       </p>
