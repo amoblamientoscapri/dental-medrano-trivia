@@ -52,6 +52,17 @@ export async function getAllCampaigns(): Promise<(Campaign & { _count: { registr
   }));
 }
 
+export async function getActiveCampaigns(): Promise<Campaign[]> {
+  const rows = await prisma.campaign.findMany({
+    where: {
+      active: true,
+      expiresAt: { gte: new Date() },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return rows.map(toCampaign);
+}
+
 export async function deleteCampaign(id: string): Promise<Campaign> {
   const updated = await prisma.campaign.update({
     where: { id },
